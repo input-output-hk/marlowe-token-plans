@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import MarloweSDK from '../services/MarloweSDK';
 import Landing from './Landing';
-import Payouts from './Payouts';
+import VestingSchedule from './VestingSchedule';
 import ToastMessage from './ToastMessage';
 
 
@@ -24,7 +24,7 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Landing sdk={sdk} setAndShowToast={setAndShowToast} />} />
-        <Route path="/payouts" element={<Payouts sdk={sdk} setAndShowToast={setAndShowToast} />} />
+        <Route path="/vesting-schedules" element={<VestingSchedule sdk={sdk} setAndShowToast={setAndShowToast} />} />
       </Routes>
     <div className="toast-container position-fixed bottom-0 end-0 p-3">
       {toasts.map(toast => (

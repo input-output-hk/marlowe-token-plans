@@ -2,6 +2,7 @@ import { Blockfrost, Lucid } from "lucid-cardano";
 import { RuntimeBrowser } from "@marlowe.io/runtime"
 import Token from "../models/Token";
 import Payout from "../models/Payout";
+import Status from "../models/Status";
 import * as E from "fp-ts/Either"
 type Wallet = {
   enable: () => Promise<any>;
@@ -48,6 +49,7 @@ class MarloweSDK {
     const payout1 = new Payout(
       'payoutID1',
       "contractID1",
+      Status.PENDING,
       roleToken1,
       tokens1
     );
@@ -55,6 +57,7 @@ class MarloweSDK {
     const payout2 = new Payout(
       "PayoutID2",
       "contractID1",
+      Status.CLAIMED,
       roleToken2,
       tokens2
     );
@@ -62,6 +65,7 @@ class MarloweSDK {
     const payout3 = new Payout(
       "PayoutID3",
       "contractID1",
+      Status.IN_PROGRESS,
       roleToken3,
       tokens2
     );
@@ -69,6 +73,7 @@ class MarloweSDK {
     const payout4 = new Payout(
       "PayoutID4",
       "contractID1",
+      Status.CANCELLED,
       roleToken4,
       tokens2
     );

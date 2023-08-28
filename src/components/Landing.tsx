@@ -16,7 +16,7 @@ const Landing: React.FC<LandingProps> = ({sdk, setAndShowToast}) => {
       try {
         (async () => {
           await sdk.connectWallet(walletProvider);
-          navigate('/payouts');
+          navigate('/vesting-schedules');
         })();
       } catch (e) {
         console.log("USE EFFECT ON LANDNING PAGE FAILED: ", e)
@@ -46,7 +46,7 @@ const Landing: React.FC<LandingProps> = ({sdk, setAndShowToast}) => {
           <img src="/images/marlowe-logo-primary.svg" alt="Logo" className="mb-4" id="marlowe-logo" />
         </div>
         <div className="row">
-          <p className="title">Reward withdrawals prototype</p>
+          <p className="title">Vesting schedule prototype</p>
         </div>
         <div className="row justify-content-center mt-4">
           <div className="col-12 ">

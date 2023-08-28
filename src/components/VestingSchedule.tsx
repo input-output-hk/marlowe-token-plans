@@ -3,15 +3,18 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MarloweSDK from '../services/MarloweSDK';
-import PayoutsModal from './PayoutsModal';
+import PayoutsModal from './ClaimsModal';
 import Token from '../models/Token';
+import Payout from '../models/Payout';
+import moment from 'moment';
+import Status from '../models/Status';
 
-type PayoutsProps = {
+type VestingScheduleProps = {
   sdk: MarloweSDK,
   setAndShowToast: (title:string, message:any) => void
 };
 
-const Payouts: React.FC<PayoutsProps> = ({sdk, setAndShowToast}) => {
+const Payouts: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast}) => {
   const changeAddress = sdk.changeAddress || '';
   const truncatedAddress = changeAddress.slice(0,18);
   const sdkPayouts = sdk.getPayouts();
@@ -57,21 +60,6 @@ const Payouts: React.FC<PayoutsProps> = ({sdk, setAndShowToast}) => {
     navigate('/');
   }
 
-  const toggleBundleWithdrawal = (payoutId:string) => {
-    let newState = [...payoutsToBePaidIds];
-    if (newState.includes(payoutId)) {
-      newState = newState.filter(id => id !== payoutId);
-    } else {
-      newState = [...newState, payoutId];
-    }
-
-    setPayoutsToBePaidIds(newState);
-
-    if (newState.length > 3) {
-      showTooManyPayoutsWarning();
-    }
-  }
-
   const showTooManyPayoutsWarning = () => {
       return setAndShowToast(
         'Warning: Too many payouts selected',
@@ -104,23 +92,28 @@ const Payouts: React.FC<PayoutsProps> = ({sdk, setAndShowToast}) => {
     }
   }
 
-  function allPayoutIds() {
-    return payouts.map(payout => payout.payoutId);
+  function formatDate(date: Date) {
+    return moment(date).format('MM/DD/YYYY');
   }
 
-  function allPayoutsSelected() {
-    return payoutsToBePaidIds.length === allPayoutIds().length;
+  function handlePayout(payoutId: string) {
+    return true;
   }
 
-  function handleSelectAll() {
-    if (allPayoutsSelected()) {
-      setPayoutsToBePaidIds([]);
-    } else {
-      const payoutIds = allPayoutIds();
-      setPayoutsToBePaidIds(payoutIds);
-      if (payoutIds.length > 3) {
-        showTooManyPayoutsWarning();
-      }
+  function renderAction(payout: Payout) {
+    switch (payout.status) {
+      case Status.PENDING:
+        return (<span className='status-awaiting'>Awaiting</span>)
+      case Status.IN_PROGRESS:
+        return (
+          <button className='btn btn-outline-danger' onClick={() => handlePayout(payout.payoutId)}>
+            Cancel
+          </button>
+        );
+      case Status.CANCELLED:
+        return (<span className='status-cancelled'>Cancelled</span>)
+      case Status.CLAIMED:
+        return (<span className='status-claimed'>Claimed</span>)
     }
   }
 
@@ -152,41 +145,54 @@ const Payouts: React.FC<PayoutsProps> = ({sdk, setAndShowToast}) => {
         </div>
       </div>
       <div className='row'>
-        <div className='col-6 text-left'>
-            <p className="title">Select rewards to withdraw</p>
+        <div className='col text-left'>
+          <p className="title">Select rewards to withdraw</p>
         </div>
-        <div className='col-6 d-flex justify-content-end align-items-center'>
-            <div className='form-check form-switch d-flex align-items-center' style={{ marginRight: '30px' }}>
-                <input type="checkbox" className='form-check-input font-weight-bold' style={{ marginRight: '10px' }} checked={allPayoutsSelected()} onChange={handleSelectAll}/>
-                <label className="form-check-label font-weight-bold">Select All</label>
-            </div>
-            <button className='btn btn-primary' disabled={!(payoutsToBePaidIds.length > 0)} onClick={openModal}>
-                Withdraw
-            </button>
+        <div className='col text-right'>
+          <button className='btn btn-outline-primary' onClick={openModal}>
+              Create a vesting schedule
+          </button>
         </div>
+
       </div>
       <div className="my-5">
         <table className="table">
           <thead>
             <tr>
-              <th scope="col">ID</th>
-              <th scope="col">ContractId</th>
-              <th scope="col">Role Token</th>
-              <th scope="col">Tokens</th>
-              <th scope="col">Select For Payout</th>
+              {/* Logos */}
+              <th scope="col"><img src="images/fingerprint.svg" alt="Name Logo" className="header-logo" /></th>
+              <th scope="col"><img src="images/event_available.svg" alt="Start Date Logo" className="header-logo" /></th>
+              <th scope="col"><img src="images/event_busy.svg" alt="End Date Logo" className="header-logo" /></th>
+              <th scope="col"><img src="images/cycle.svg" alt="Next Vest Date Logo" className="header-logo" /></th>
+              <th scope="col"><img src="images/forest.svg" alt="Total Shares Logo" className="header-logo" /></th>
+              <th scope="col"><img src="images/nature.svg" alt="Vested Logo" className="header-logo" /></th>
+              <th scope="col"><img src="images/nature_people.svg" alt="Claim Logo" className="header-logo" /></th>
+              <th scope="col"><img src="images/check_circle.svg" alt="Actions Logo" className="header-logo" /></th>
+            </tr>
+            <tr>
+              {/* Headers */}
+              <th scope="col">Name</th>
+              <th scope="col">Start date</th>
+              <th scope="col">End date</th>
+              <th scope="col">Next vest date</th>
+              <th scope="col">Total shares</th>
+              <th scope="col">Vested</th>
+              <th scope="col">Claim</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
             {payouts.map((payout, index) => (
               <tr key={index}>
-                <td>{payout.payoutId}</td>
-                <td>{payout.contractId}</td>
-                <td>{payout.role.tokenName}</td>
-                <td>{payout.tokens.map((tk : Token) => tk.tokenName).join(", ")}</td>
-                <td>
-                  <div className='form-check form-switch'>
-                    <input type="checkbox" className='form-check-input mx-auto' checked={payoutsToBePaidIds.includes(payout.payoutId)} onChange={() => toggleBundleWithdrawal(payout.payoutId)}/>
-                  </div>
+                <td className='py-3'>{payout.payoutId}</td>
+                <td className='py-3'>{formatDate(new Date())}</td>
+                <td className='py-3'>{formatDate(new Date())}</td>
+                <td className='py-3'>{formatDate(new Date())}</td>
+                <td className='py-3'>{payout.role.tokenName}</td>
+                <td className='py-3'>{payout.role.tokenName}</td>
+                <td className='py-3'>{payout.tokens.map((tk : Token) => tk.tokenName).join(", ")}</td>
+                <td className='py-3'>
+                  {renderAction(payout)}
                 </td>
               </tr>
             ))}

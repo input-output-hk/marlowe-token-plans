@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
 $primary: #4B1FED;
+$danger: #FF515B;
 
 @import '~bootstrap/scss/bootstrap';
 
@@ -219,4 +220,28 @@ body {
 
 .form-check-input {
   font-size: 20px;
+}
+
+/* Center the content of the table headers */
+.table th {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table thead {
+  border-radius: 0.625rem;
+  background: #F8F6FF;
+}
+
+/* Remove border from table headers */
+.table thead th, td {
+  background: #F8F6FF;
+  border: none;
+}
+
+/* Style for the logo images */
+.header-logo {
+  max-width: 30px; /* Adjust as needed */
+  display: block;
+  margin: 0 auto;
 }
