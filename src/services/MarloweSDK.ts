@@ -1,8 +1,11 @@
 import { Blockfrost, Lucid } from "lucid-cardano";
 import { RuntimeBrowser } from "@marlowe.io/runtime"
+import moment from "moment";
 import Token from "../models/Token";
 import Payout from "../models/Payout";
 import Status from "../models/Status";
+import Contract from "../models/Contract";
+import Transaction from "../models/Transaction";
 import * as E from "fp-ts/Either"
 type Wallet = {
   enable: () => Promise<any>;
@@ -14,7 +17,7 @@ class MarloweSDK {
   connectedWallet: Wallet | null;
   lovelaceBalance: bigint;
   changeAddress: string | null;
-  payouts: any[];
+  contracts: any[];
   lucid: Lucid | null;
   runtimeSettings: any;
   runtimeBrowser: any;
@@ -31,63 +34,44 @@ class MarloweSDK {
     this.connectedWallet = null;
     this.lovelaceBalance = 125000000n;
     this.changeAddress = null;
-    const tokens1 = [
-      new Token('1', "TokenA", "TA", 3000000n),
-      new Token('2', "TokenB", "TB", 2000000n)
-    ];
 
-    const tokens2 = [
-      new Token('3', "TokenC", "TC", 3000000n),
-      new Token('4', "TokenD", "TD", 2000000n),
-    ];
-
-    const roleToken1 = new Token('5', "RoleToken1", "RT1", 1n)
-    const roleToken2 = new Token('6', "RoleToken2", "RT2", 1n)
-    const roleToken3 = new Token('7', "RoleToken2", "RT2", 1n)
-    const roleToken4 = new Token('8', "RoleToken2", "RT2", 1n)
-
-    const payout1 = new Payout(
-      'payoutID1',
-      "contractID1",
-      Status.PENDING,
-      roleToken1,
-      tokens1
+    const contract = new Contract(
+      'contractID1',
+      'Contract1',
+      { totalShares: 1000, vestedShares: 500, claimedShares: 498, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days')  },
+      Status.IN_PROGRESS
     );
 
-    const payout2 = new Payout(
-      "PayoutID2",
-      "contractID1",
-      Status.CLAIMED,
-      roleToken2,
-      tokens2
+    const contract2 = new Contract(
+      'contractID2',
+      'Contract2',
+      { totalShares: 1000, vestedShares: 0, claimedShares: 0, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days')},
+      Status.PENDING
     );
 
-    const payout3 = new Payout(
-      "PayoutID3",
-      "contractID1",
-      Status.IN_PROGRESS,
-      roleToken3,
-      tokens2
+    const contract3 = new Contract(
+      'contractID3',
+      'Contract3',
+      { totalShares: 1000, vestedShares: 1000, claimedShares: 1000, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days')},
+      Status.CLAIMED
     );
 
-    const payout4 = new Payout(
-      "PayoutID4",
-      "contractID1",
-      Status.CANCELLED,
-      roleToken4,
-      tokens2
+    const contract4 = new Contract(
+      'contractID4',
+      'Contract4',
+      { totalShares: 1000, vestedShares: 1000, claimedShares: 300, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days') },
+      Status.CANCELLED
     );
 
-    const payouts = [payout1, payout2, payout3, payout4];
-
-    this.payouts = payouts;
+    const contracts = [contract, contract2, contract3, contract4];
+    this.contracts = contracts;
 
     this.lucid = null;
 
   }
 
-  getPayouts() {
-    return this.payouts;
+  getContracts() {
+    return this.contracts;
   }
 
   getConnectedWallet(): Wallet | null {
@@ -150,25 +134,25 @@ class MarloweSDK {
     return "addr_test1qrtwu0c4lpfpfd89d8j0mvxrznx3ypa30cafhzure0ufc9w6vhc3ts2pccnuqxp25a0nfhdm94z89tu2qj325hkema2sg659ex";
   }
 
-  async withdrawPayouts(payouts:Payout[], successCallback:any): Promise<void> {
-    const lucid = this.getLucid();
-    const destinationAddress = this.getDestinationAddress();
-    if (lucid && destinationAddress) {
-      let tx = await lucid.newTx()
+  // async withdrawPayouts(payouts:Payout[], successCallback:any): Promise<void> {
+  //   const lucid = this.getLucid();
+  //   const destinationAddress = this.getDestinationAddress();
+  //   if (lucid && destinationAddress) {
+  //     let tx = await lucid.newTx()
 
-      payouts.forEach(async (payout) => {
-        const amount = payout.tokens.map((token: Token) => token.amount).reduce((a, b) => a + b, 0n);
-        console.log("amount", amount);
-        tx = await tx.payToAddress(destinationAddress, { lovelace: amount })
-      })
+  //     payouts.forEach(async (payout) => {
+  //       const amount = payout.tokens.map((token: Token) => token.amount).reduce((a, b) => a + b, 0n);
+  //       console.log("amount", amount);
+  //       tx = await tx.payToAddress(destinationAddress, { lovelace: amount })
+  //     })
 
-      const completeTransaction = await tx.complete();
+  //     const completeTransaction = await tx.complete();
 
-      const signedTx = await completeTransaction.sign().complete();
-      const txHash = await signedTx.submit();
-      successCallback();
-    }
-  }
+  //     const signedTx = await completeTransaction.sign().complete();
+  //     const txHash = await signedTx.submit();
+  //     successCallback();
+  //   }
+  // }
 }
 
 export default MarloweSDK;

@@ -223,7 +223,7 @@ body {
 }
 
 /* Center the content of the table headers */
-.table th {
+.table th, td {
   text-align: center;
   vertical-align: middle;
 }

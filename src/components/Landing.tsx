@@ -36,7 +36,7 @@ const Landing: React.FC<LandingProps> = ({sdk, setAndShowToast}) => {
       `Sucessfully connected ${walletName} wallet`,
       <span>You can now see a list of available payouts for your {walletName} wallet!</span>
     );
-    navigate('/payouts');
+    navigate('/vesting-schedules');
   }
 
   return (
