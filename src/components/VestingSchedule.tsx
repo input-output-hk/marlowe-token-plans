@@ -96,11 +96,17 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
     const percentage = (claimedShares / vestedShares) * 100;
 
     return (
-      <div className='row justify-content-center'>
-        <div className='col-6'>
-        <div className="progress">
-          <div className="progress-bar" role="progressbar" style={{width: percentage}} aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}></div>
-        </div></div>
+      <div className='container'>
+        <div className='row justify-content-center'>
+          <div className='col-6'>
+            <div className="progress">
+              <div className="progress-bar" role="progressbar" style={{width: `${percentage}%`}} aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}></div>
+            </div>
+          </div>
+        </div>
+        <div className='row justify-content-center'>
+            <span>{claimedShares}/{vestedShares}</span>
+        </div>
       </div>
     )
   }

@@ -38,7 +38,7 @@ class MarloweSDK {
     const contract = new Contract(
       'contractID1',
       'Contract1',
-      { totalShares: 1000, vestedShares: 500, claimedShares: 498, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days')  },
+      { totalShares: 1000, vestedShares: 500, claimedShares: 318, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days')  },
       Status.IN_PROGRESS
     );
 
@@ -130,29 +130,8 @@ class MarloweSDK {
   }
 
   getDestinationAddress(): string {
-    // return "addr_test1qqc3suxnrnsejezh8yzg3qzfupxqn65v5dem2rpnmr60rvgv2ckqzwjtp8w854ua4rd3udc08y5hlnxz82xhml96967saa9fdr";
     return "addr_test1qrtwu0c4lpfpfd89d8j0mvxrznx3ypa30cafhzure0ufc9w6vhc3ts2pccnuqxp25a0nfhdm94z89tu2qj325hkema2sg659ex";
   }
-
-  // async withdrawPayouts(payouts:Payout[], successCallback:any): Promise<void> {
-  //   const lucid = this.getLucid();
-  //   const destinationAddress = this.getDestinationAddress();
-  //   if (lucid && destinationAddress) {
-  //     let tx = await lucid.newTx()
-
-  //     payouts.forEach(async (payout) => {
-  //       const amount = payout.tokens.map((token: Token) => token.amount).reduce((a, b) => a + b, 0n);
-  //       console.log("amount", amount);
-  //       tx = await tx.payToAddress(destinationAddress, { lovelace: amount })
-  //     })
-
-  //     const completeTransaction = await tx.complete();
-
-  //     const signedTx = await completeTransaction.sign().complete();
-  //     const txHash = await signedTx.submit();
-  //     successCallback();
-  //   }
-  // }
 }
 
 export default MarloweSDK;
