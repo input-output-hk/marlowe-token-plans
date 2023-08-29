@@ -154,25 +154,25 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
           <thead>
             <tr>
               {/* Logos */}
-              <th scope="col"><img src="images/fingerprint.svg" alt="Name Logo" className="header-logo" /></th>
-              <th scope="col"><img src="images/event_available.svg" alt="Start Date Logo" className="header-logo" /></th>
-              <th scope="col"><img src="images/event_busy.svg" alt="End Date Logo" className="header-logo" /></th>
-              <th scope="col"><img src="images/cycle.svg" alt="Next Vest Date Logo" className="header-logo" /></th>
-              <th scope="col"><img src="images/forest.svg" alt="Total Shares Logo" className="header-logo" /></th>
-              <th scope="col"><img src="images/nature.svg" alt="Vested Logo" className="header-logo" /></th>
-              <th scope="col"><img src="images/nature_people.svg" alt="Claim Logo" className="header-logo" /></th>
-              <th scope="col"><img src="images/check_circle.svg" alt="Actions Logo" className="header-logo" /></th>
+              <th className="pt-3" scope="col"><img src="images/fingerprint.svg" alt="Name Logo" className="header-logo" /></th>
+              <th className="pt-3" scope="col"><img src="images/event_available.svg" alt="Start Date Logo" className="header-logo" /></th>
+              <th className="pt-3" scope="col"><img src="images/event_busy.svg" alt="End Date Logo" className="header-logo" /></th>
+              <th className="pt-3" scope="col"><img src="images/cycle.svg" alt="Next Vest Date Logo" className="header-logo" /></th>
+              <th className="pt-3" scope="col"><img src="images/forest.svg" alt="Total Shares Logo" className="header-logo" /></th>
+              <th className="pt-3" scope="col"><img src="images/nature.svg" alt="Vested Logo" className="header-logo" /></th>
+              <th className="pt-3" scope="col"><img src="images/nature_people.svg" alt="Claim Logo" className="header-logo" /></th>
+              <th className="pt-3" scope="col"><img src="images/check_circle.svg" alt="Actions Logo" className="header-logo" /></th>
             </tr>
             <tr>
               {/* Headers */}
-              <th scope="col">Name</th>
-              <th scope="col">Start date</th>
-              <th scope="col">End date</th>
-              <th scope="col">Next vest date</th>
-              <th scope="col">Total shares</th>
-              <th scope="col">Vested</th>
-              <th scope="col">Claimed</th>
-              <th scope="col">Actions</th>
+              <th className="pb-3" scope="col">Name</th>
+              <th className="pb-3" scope="col">Start date</th>
+              <th className="pb-3" scope="col">End date</th>
+              <th className="pb-3" scope="col">Next vest date</th>
+              <th className="pb-3" scope="col">Total shares</th>
+              <th className="pb-3" scope="col">Vested</th>
+              <th className="pb-3" scope="col">Claimed</th>
+              <th className="pb-3" scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
