@@ -193,7 +193,6 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
           </tbody>
         </table>
       </div>
-      {/* <PayoutsModal showModal={showModal} closeModal={closeModal} payoutsToBePaidIds={payoutsToBePaidIds} payouts={payouts} handleWithdrawals={handleWithdrawals} destinationAddress={sdk.getDestinationAddress()} /> */}
       <ClaimsModal showModal={showModal} closeModal={closeModal}  />
     </div>
   );
