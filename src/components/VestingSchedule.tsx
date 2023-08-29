@@ -56,6 +56,10 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
     navigate('/');
   }
 
+  const isManager = (contract: Contract) => {
+    return contract.managingAddress === changeAddress;
+  }
+
   const showTooManyPayoutsWarning = () => {
       return setAndShowToast(
         'Warning: Too many payouts selected',
@@ -79,11 +83,20 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
       case Status.PENDING:
         return (<span className='status-awaiting'>Awaiting</span>)
       case Status.IN_PROGRESS:
-        return (
-          <button className='btn btn-outline-danger font-weight-bold' onClick={() => cancelVestingContract(contract.id)}>
-            Cancel
-          </button>
-        );
+        if (isManager(contract)) {
+          return (
+            <button className='btn btn-outline-danger font-weight-bold' onClick={() => cancelVestingContract(contract.id)}>
+              Cancel
+            </button>
+          );
+        } else {
+          return (
+            <button className='btn btn-outline-primary font-weight-bold' onClick={() => cancelVestingContract(contract.id)}>
+              Claim
+            </button>
+          );
+        }
+  
       case Status.CANCELLED:
         return (<span className='status-cancelled'>Cancelled</span>)
       case Status.CLAIMED:

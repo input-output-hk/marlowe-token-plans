@@ -1,11 +1,8 @@
 import { Blockfrost, Lucid } from "lucid-cardano";
 import { RuntimeBrowser } from "@marlowe.io/runtime"
 import moment from "moment";
-import Token from "../models/Token";
-import Payout from "../models/Payout";
 import Status from "../models/Status";
 import Contract from "../models/Contract";
-import Transaction from "../models/Transaction";
 import * as E from "fp-ts/Either"
 type Wallet = {
   enable: () => Promise<any>;
@@ -38,6 +35,7 @@ class MarloweSDK {
     const contract = new Contract(
       'contractID1',
       'Contract1',
+      'addr_test1qqc3suxnrnsejezh8yzg3qzfupxqn65v5dem2rpnmr60rvgv2ckqzwjtp8w854ua4rd3udc08y5hlnxz82xhml96967saa9fdr',
       { totalShares: 1000, vestedShares: 500, claimedShares: 318, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days')  },
       Status.IN_PROGRESS
     );
@@ -45,6 +43,7 @@ class MarloweSDK {
     const contract2 = new Contract(
       'contractID2',
       'Contract2',
+      'addr_test1qqc3suxnrnsejezh8yzg3qzfupxqn65v5dem2rpnmr60rvgv2ckqzwjtp8w854ua4rd3udc08y5hlnxz82xhml96967saa9fdr',
       { totalShares: 1000, vestedShares: 0, claimedShares: 0, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days')},
       Status.PENDING
     );
@@ -52,6 +51,7 @@ class MarloweSDK {
     const contract3 = new Contract(
       'contractID3',
       'Contract3',
+      'addr_test1qqc3suxnrnsejezh8yzg3qzfupxqn65v5dem2rpnmr60rvgv2ckqzwjtp8w854ua4rd3udc08y5hlnxz82xhml96967saa9fdr',
       { totalShares: 1000, vestedShares: 1000, claimedShares: 1000, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days')},
       Status.CLAIMED
     );
@@ -59,6 +59,7 @@ class MarloweSDK {
     const contract4 = new Contract(
       'contractID4',
       'Contract4',
+      'addr_test1qqc3suxnrnsejezh8yzg3qzfupxqn65v5dem2rpnmr60rvgv2ckqzwjtp8w854ua4rd3udc08y5hlnxz82xhml96967saa9fdr',
       { totalShares: 1000, vestedShares: 1000, claimedShares: 300, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days') },
       Status.CANCELLED
     );
