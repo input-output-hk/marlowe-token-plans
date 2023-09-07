@@ -81,7 +81,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
   function renderAction(contract: Contract) {
     switch (contract.status) {
       case Status.PENDING:
-        return (<span className='status-awaiting'>Awaiting</span>)
+        return (<span className='status-awaiting warning-color font-weight-bold'>Awaiting</span>)
       case Status.IN_PROGRESS:
         if (isManager(contract)) {
           return (
@@ -104,16 +104,19 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
     }
   }
 
-  function renderClaimProgress(metadata: any) {
+  function renderClaimProgress(contract: Contract) {
+    const metadata:any = contract.metadata;
     const { vestedShares, claimedShares } = metadata;
     const percentage = (claimedShares / vestedShares) * 100;
+
+    const classNames = contract.status == Status.PENDING ? 'progress-bar bg-warning' : 'progress-bar';
 
     return (
       <div className='container'>
         <div className='row justify-content-center'>
           <div className='col-6'>
             <div className="progress">
-              <div className="progress-bar" role="progressbar" style={{width: `${percentage}%`}} aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}></div>
+              <div className={classNames} role="progressbar" style={{width: `${percentage}%`}} aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}></div>
             </div>
           </div>
         </div>
@@ -197,7 +200,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
                 <td className='py-3'>{formatDate(contract.metadata.nextVestingDate)}</td>
                 <td className='py-3'>{contract.metadata.totalShares}</td>
                 <td className='py-3'>{contract.metadata.vestedShares}</td>
-                <td className='py-3'>{renderClaimProgress(contract.metadata)}</td>
+                <td className='py-3'>{renderClaimProgress(contract)}</td>
                 <td className='py-3'>
                   {renderAction(contract)}
                 </td>

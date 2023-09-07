@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
 $primary: #4B1FED;
+$warning: #E8740A;
 $danger: #FF515B;
 
 @import '~bootstrap/scss/bootstrap';
@@ -244,4 +245,12 @@ body {
   max-width: 30px; /* Adjust as needed */
   display: block;
   margin: 0 auto;
+}
+
+.warning-color {
+  color: $warning;
+}
+
+.progress-bar .bg-warning {
+  background-color: $warning;
 }
