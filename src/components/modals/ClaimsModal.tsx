@@ -1,14 +1,22 @@
-import Contract from '../../models/Contract';
 import React from 'react';
+import Payout from '../../models/Payout';
+import Token from '../../models/Token';
 
-interface CancelVestingScheduleModalProps {
+interface ClaimModalProps {
   showModal: boolean;
   closeModal: () => void;
-  contract: Contract;
-  destinationAddress: string;
+  // payoutsToBePaidIds: string[];
+  // payouts: Payout[];
+  // destinationAddress: string;
+  // handleWithdrawals: () => void;
 }
 
-const CancelVestingScheduleModal: React.FC<CancelVestingScheduleModalProps> = ({ showModal, closeModal }) => {
+const extractAmount = () => {
+  // return payout.tokens.map((token: Token) => token.amount).reduce((a, b) => a + b, 0n).toString();
+};
+
+const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal }) => {
+  // const payoutsToBePaid = payouts.filter(payout => payoutsToBePaidIds.includes(payout.payoutId));
 
   return (
     <>
@@ -19,7 +27,7 @@ const CancelVestingScheduleModal: React.FC<CancelVestingScheduleModalProps> = ({
               <div className='container'>
                 <div className='row'>
                   <div className='col-10 text-left'>
-                    <h5 className="modal-title">Confirm Withdrawal</h5>
+                    <h5 className="modal-title">CLAIM</h5>
                   </div>
                   <div className='col-2 text-right'>
                     <button type="button" className="close btn btn-outline-secondary" onClick={closeModal}>
@@ -37,6 +45,9 @@ const CancelVestingScheduleModal: React.FC<CancelVestingScheduleModalProps> = ({
                       <p className='font-weight-bold'>Reward name</p>
                       <div className='container inner-modal-body'>
                         <ul>
+                          {/* {payoutsToBePaid.map((payout, index) => (
+                            <li key={index}>{payout.payoutId}: {extractAmount(payout)} lovelace</li>
+                          ))} */}
                         </ul>
                       </div>
                     </div>
@@ -62,8 +73,8 @@ const CancelVestingScheduleModal: React.FC<CancelVestingScheduleModalProps> = ({
               <div className='container'>
                 <div className='row'>
                   <div className='col'>
-                    <button type="button" className="btn btn-outline-danger" onClick={closeModal}>
-                      Cancel schedule
+                    <button type="button" className="btn btn-outline-secondary w-100" onClick={closeModal}>
+                      Cancel
                     </button>
                   </div>
                   <div className='col'>
@@ -82,4 +93,4 @@ const CancelVestingScheduleModal: React.FC<CancelVestingScheduleModalProps> = ({
   );
 };
 
-export default CancelVestingScheduleModal;
+export default ClaimsModal;

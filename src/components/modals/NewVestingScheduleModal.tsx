@@ -1,6 +1,8 @@
 import React from 'react';
+import Payout from '../../models/Payout';
+import Token from '../../models/Token';
 
-interface ClaimModalProps {
+interface NewVestingScheduleModalProps {
   showModal: boolean;
   closeModal: () => void;
   // payoutsToBePaidIds: string[];
@@ -13,7 +15,7 @@ const extractAmount = () => {
   // return payout.tokens.map((token: Token) => token.amount).reduce((a, b) => a + b, 0n).toString();
 };
 
-const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal }) => {
+const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showModal, closeModal }) => {
   // const payoutsToBePaid = payouts.filter(payout => payoutsToBePaidIds.includes(payout.payoutId));
 
   return (
@@ -25,7 +27,7 @@ const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal }) => {
               <div className='container'>
                 <div className='row'>
                   <div className='col-10 text-left'>
-                    <h5 className="modal-title">Confirm Withdrawal</h5>
+                    <h5 className="modal-title">CREATE VESTING SCHEDULE</h5>
                   </div>
                   <div className='col-2 text-right'>
                     <button type="button" className="close btn btn-outline-secondary" onClick={closeModal}>
@@ -91,4 +93,4 @@ const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal }) => {
   );
 };
 
-export default ClaimsModal;
+export default NewVestingScheduleModal;
