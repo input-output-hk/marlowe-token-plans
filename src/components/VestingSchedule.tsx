@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MarloweSDK from '../services/MarloweSDK';
 import NewVestingScheduleModal from './modals/NewVestingScheduleModal';
+import DepositVestingScheduleModal from './modals/DepositVestingScheduleModal';
 import EditVestingScheduleModal from './modals/EditVestingScheduleModal';
 import ClaimsModal from './modals/ClaimsModal';
 import Contract from '../models/Contract';
@@ -16,7 +17,8 @@ type VestingScheduleProps = {
 enum VestingScheduleModal {
   NEW = 'new',
   EDIT = 'edit',
-  CLAIM = 'claim'
+  CLAIM = 'claim',
+  DEPOSIT = 'deposit',
 }
 
 const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast}) => {
@@ -28,11 +30,15 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
   const [showModal, setShowModal] = useState(false);
   const [showNewVestingScheduleModal, setShowNewVestingScheduleModal] = useState(false);
   const [showEditVestingScheduleModal, setShowEditVestingScheduleModal] = useState(false);
+  const [showDepositVestingScheduleModal, setShowDepositVestingScheduleModal] = useState(false);
 
   const openModal = (modalName:string) => {
     switch (modalName) {
       case VestingScheduleModal.NEW:
         setShowNewVestingScheduleModal(true);
+        break;
+      case VestingScheduleModal.DEPOSIT:
+        setShowDepositVestingScheduleModal(true);
         break;
       case VestingScheduleModal.EDIT:
         setShowEditVestingScheduleModal(true);
@@ -48,6 +54,9 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
     switch (modalName) {
       case VestingScheduleModal.NEW:
         setShowNewVestingScheduleModal(false);
+        break;
+      case VestingScheduleModal.DEPOSIT:
+        setShowDepositVestingScheduleModal(false);
         break;
       case VestingScheduleModal.EDIT:
         setShowEditVestingScheduleModal(false);
@@ -97,6 +106,15 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
 
   function renderAction(contract: Contract) {
     switch (contract.status) {
+      case Status.CREATED:
+        if (isManager(contract)) {
+          return (
+            <button className='btn btn-outline-success font-weight-bold' onClick={() => openModal(VestingScheduleModal.DEPOSIT)}>
+              Deposit
+            </button>
+          );
+        }
+        return (<span className='status-awaiting warning-color font-weight-bold'>Awaiting</span>)
       case Status.PENDING:
         return (<span className='status-awaiting warning-color font-weight-bold'>Awaiting</span>)
       case Status.IN_PROGRESS:
@@ -227,6 +245,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
         </table>
       </div>
       <NewVestingScheduleModal showModal={showNewVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.NEW)}  />
+      <DepositVestingScheduleModal showModal={showDepositVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.DEPOSIT)}  />
       <EditVestingScheduleModal showModal={showEditVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.EDIT)}  />
       <ClaimsModal showModal={showModal} closeModal={() => closeModal(VestingScheduleModal.CLAIM)}  />
     </div>

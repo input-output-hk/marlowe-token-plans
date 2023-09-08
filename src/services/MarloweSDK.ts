@@ -64,7 +64,16 @@ class MarloweSDK {
       Status.CANCELLED
     );
 
-    const contracts = [contract, contract2, contract3, contract4];
+    const contract5 = new Contract(
+      'contractID5',
+      'Contract5',
+      'addr_test1qzmzvy7e6h7hs6t4gsek4azkszd9pucmw2pwazpx2t6fna0q2ckh2rhm5s7cm765xeqjkm6xs4cm6j3994cakdep7tyqa9ffn2',
+      { totalShares: 1000, vestedShares: 1000, claimedShares: 300, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days') },
+      Status.CREATED
+    );
+
+
+    const contracts = [contract, contract2, contract3, contract4, contract5];
     this.contracts = contracts;
 
     this.lucid = null;
