@@ -1,42 +1,58 @@
-import React, { useEffect, useState } from 'react';
+import React, { } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MarloweSDK from '../services/MarloweSDK';
+
+declare global {
+  interface Window {
+    cardano: any;
+  }
+}
 
 type LandingProps = {
-  sdk: MarloweSDK;
-  setAndShowToast: (title:string, message:any) => void
+  setAndShowToast: (title: string, message: any, isDanger: boolean) => void
 };
 
-const Landing: React.FC<LandingProps> = ({sdk, setAndShowToast}) => {
+const Landing: React.FC<LandingProps> = ({ setAndShowToast }) => {
   const navigate = useNavigate();
+  const selectedAWalletExtension = localStorage.getItem('walletProvider');
+  const validWalletExtentions = ['nami', 'eternl'];
+  if (selectedAWalletExtension) { navigate('/vesting-schedules') }
 
-  useEffect(() => {
-    const walletProvider = localStorage.getItem('walletProvider');
-    if (walletProvider) {
-      try {
-        (async () => {
-          await sdk.connectWallet(walletProvider);
-          navigate('/vesting-schedules');
-        })();
-      } catch (e) {
-        console.log("USE EFFECT ON LANDNING PAGE FAILED: ", e)
-        localStorage.setItem('walletProvider', '');
-      }
-    }
-  }, [sdk, navigate]);
-
-
-  async function connectWallet(walletName:string) {
-    await sdk.connectWallet(walletName);
-    const connectedWallet = sdk.getConnectedWallet();
-    if (connectedWallet) {
-      localStorage.setItem('walletProvider', walletName);
-    }
+  async function connectWallet(walletName: string) {
+    localStorage.setItem('walletProvider', walletName);
+    const selectedAWalletExtension = localStorage.getItem('walletProvider');
     setAndShowToast(
       `Sucessfully connected ${walletName} wallet`,
-      <span>You can now see a list of available payouts for your {walletName} wallet!</span>
+      <span className='text-color-white'>You can now see a list of available vesting schedules for your {walletName} wallet!</span>,
+      false
     );
     navigate('/vesting-schedules');
+  }
+
+  function capitalizeFirstLetter(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  function renderWallets(walletName: string) {
+    if (window.cardano && window.cardano[walletName]) {
+      return (<div className="row mt-2">
+        <div className="col-12 bordered-container" onClick={() => connectWallet(walletName)}>
+          <img src={window.cardano[walletName].icon} alt="Icon Before" className="icon" />
+          {capitalizeFirstLetter(walletName)} Wallet
+          <div className="cardano-badge">
+            <img src="images/cardano-logo.png" alt="Icon After" className="icon-after" />
+            Cardano
+          </div>
+        </div>
+      </div>)
+    } else {
+      return (
+        <div className="row mt-2">
+          <div className="col-12 bordered-container">
+            Please install {walletName} wallet extension to use app
+          </div>
+        </div>
+      )
+    }
   }
 
   return (
@@ -46,7 +62,7 @@ const Landing: React.FC<LandingProps> = ({sdk, setAndShowToast}) => {
           <img src="/images/marlowe-logo-primary.svg" alt="Logo" className="mb-4" id="marlowe-logo" />
         </div>
         <div className="row">
-          <p className="title">Vesting schedule prototype</p>
+          <p className="title">Reward withdrawals prototype</p>
         </div>
         <div className="row justify-content-center mt-4">
           <div className="col-12 ">
@@ -59,27 +75,7 @@ const Landing: React.FC<LandingProps> = ({sdk, setAndShowToast}) => {
                       <p className="card-help-text text-left">Please select a wallet to view rewards.</p>
                     </div>
                   </div>
-                  <div className="row mt-2">
-                    <div className="col-12 bordered-container" onClick={() => connectWallet("nami")}>
-                      <img src="/images/nami.svg" alt="Icon Before" className="icon" />
-                      Nami Wallet
-                      <div className="cardano-badge">
-                        <img src="images/cardano_logo.png" alt="Icon After" className="icon-after" />
-                        Cardano
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row mt-2">
-                    <div className="col-12 bordered-container" onClick={() => connectWallet("eternl")}>
-                      <img aria-hidden="true" src="https://lh3.googleusercontent.com/XjJJJR7nnCSk7L4ZF1B62j2BN-A571wvxW2Nadc43UBrvqiUZBqEfpOjZfgjggYwERErKLWSVSSauT44gXkD_i2tdrY=w128-h128-e365-rj-sc0x00ffffff" style={{ width: '30px', height: '30px' }} />
-                      Eternl
-                      <div className="cardano-badge">
-                        <img src="images/cardano_logo.png" alt="Icon After" className="icon-after" />
-                        Cardano
-                      </div>
-                    </div>
-                  </div>
-
+                  {validWalletExtentions.map((walletName) => renderWallets(walletName))}
                   <div className="row mt-4 d-none">
                     <div className="col-6 text-left p-0">
                       <a href="#" >Learn more</a>
