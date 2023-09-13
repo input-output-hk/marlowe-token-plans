@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MarloweSDK from '../services/MarloweSDK';
-import ClaimsModal from './ClaimsModal';
+import NewVestingScheduleModal from './modals/NewVestingScheduleModal';
+import DepositVestingScheduleModal from './modals/DepositVestingScheduleModal';
+import EditVestingScheduleModal from './modals/EditVestingScheduleModal';
+import ClaimsModal from './modals/ClaimsModal';
 import Contract from '../models/Contract';
 import moment from 'moment';
 import Status from '../models/Status';
@@ -11,6 +14,13 @@ type VestingScheduleProps = {
   setAndShowToast: (title:string, message:any) => void
 };
 
+enum VestingScheduleModal {
+  NEW = 'new',
+  EDIT = 'edit',
+  CLAIM = 'claim',
+  DEPOSIT = 'deposit',
+}
+
 const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast}) => {
   const changeAddress = sdk.changeAddress || '';
   const truncatedAddress = changeAddress.slice(0,18);
@@ -18,13 +28,43 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
   const navigate = useNavigate();
   const [contracts, setContracts] = useState<any[]>(sdkContracts);
   const [showModal, setShowModal] = useState(false);
+  const [showNewVestingScheduleModal, setShowNewVestingScheduleModal] = useState(false);
+  const [showEditVestingScheduleModal, setShowEditVestingScheduleModal] = useState(false);
+  const [showDepositVestingScheduleModal, setShowDepositVestingScheduleModal] = useState(false);
 
-  const openModal = () => {
-    setShowModal(true);
+  const openModal = (modalName:string) => {
+    switch (modalName) {
+      case VestingScheduleModal.NEW:
+        setShowNewVestingScheduleModal(true);
+        break;
+      case VestingScheduleModal.DEPOSIT:
+        setShowDepositVestingScheduleModal(true);
+        break;
+      case VestingScheduleModal.EDIT:
+        setShowEditVestingScheduleModal(true);
+        break;
+      default:
+        setShowModal(true);
+        break;
+    }
+
   };
 
-  const closeModal = () => {
-    setShowModal(false);
+  const closeModal = ( modalName: string) => {
+    switch (modalName) {
+      case VestingScheduleModal.NEW:
+        setShowNewVestingScheduleModal(false);
+        break;
+      case VestingScheduleModal.DEPOSIT:
+        setShowDepositVestingScheduleModal(false);
+        break;
+      case VestingScheduleModal.EDIT:
+        setShowEditVestingScheduleModal(false);
+        break;
+      default:
+        setShowModal(false);
+        break;
+    }
   };
 
   useEffect(() => {
@@ -60,38 +100,33 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
     return contract.managingAddress === changeAddress;
   }
 
-  const showTooManyPayoutsWarning = () => {
-      return setAndShowToast(
-        'Warning: Too many payouts selected',
-        <div>
-          <span>This payout bundle might be too big to go on chain.</span>
-          <span>Please consider breaking up your payouts into smaller bundles</span>
-        </div>
-      );
-  }
-
   function formatDate(date: Date) {
     return moment(date).format('MM/DD/YYYY');
   }
 
-  function cancelVestingContract(contractId: string) {
-    return true;
-  }
-
   function renderAction(contract: Contract) {
     switch (contract.status) {
+      case Status.CREATED:
+        if (isManager(contract)) {
+          return (
+            <button className='btn btn-outline-success font-weight-bold' onClick={() => openModal(VestingScheduleModal.DEPOSIT)}>
+              Deposit
+            </button>
+          );
+        }
+        return (<span className='status-awaiting warning-color font-weight-bold'>Awaiting</span>)
       case Status.PENDING:
         return (<span className='status-awaiting warning-color font-weight-bold'>Awaiting</span>)
       case Status.IN_PROGRESS:
         if (isManager(contract)) {
           return (
-            <button className='btn btn-outline-danger font-weight-bold' onClick={() => cancelVestingContract(contract.id)}>
+            <button className='btn btn-outline-danger font-weight-bold' onClick={() => openModal(VestingScheduleModal.EDIT)}>
               Cancel
             </button>
           );
         } else {
           return (
-            <button className='btn btn-outline-primary font-weight-bold' onClick={() => cancelVestingContract(contract.id)}>
+            <button className='btn btn-outline-primary font-weight-bold' onClick={() => openModal(VestingScheduleModal.CLAIM)}>
               Claim
             </button>
           );
@@ -159,8 +194,8 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
           <p className="title">Select rewards to withdraw</p>
         </div>
         <div className='col text-right'>
-          <button className='btn btn-outline-primary' onClick={openModal}>
-              Create a vesting schedule
+          <button className='btn btn-outline-primary font-weight-bold' onClick={() => openModal('new')}>
+            Create a vesting schedule
           </button>
         </div>
 
@@ -209,7 +244,10 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
           </tbody>
         </table>
       </div>
-      <ClaimsModal showModal={showModal} closeModal={closeModal}  />
+      <NewVestingScheduleModal showModal={showNewVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.NEW)}  />
+      <DepositVestingScheduleModal showModal={showDepositVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.DEPOSIT)}  />
+      <EditVestingScheduleModal showModal={showEditVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.EDIT)}  />
+      <ClaimsModal showModal={showModal} closeModal={() => closeModal(VestingScheduleModal.CLAIM)}  />
     </div>
   );
 };

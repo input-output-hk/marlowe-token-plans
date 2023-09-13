@@ -1,4 +1,5 @@
 enum Status {
+  CREATED,
   PENDING,
   IN_PROGRESS,
   CLAIMED,

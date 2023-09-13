@@ -35,7 +35,7 @@ class MarloweSDK {
     const contract = new Contract(
       'contractID1',
       'Contract1',
-      'addr_test1qqc3suxnrnsejezh8yzg3qzfupxqn65v5dem2rpnmr60rvgv2ckqzwjtp8w854ua4rd3udc08y5hlnxz82xhml96967saa9fdr',
+      'addr_test1qzmzvy7e6h7hs6t4gsek4azkszd9pucmw2pwazpx2t6fna0q2ckh2rhm5s7cm765xeqjkm6xs4cm6j3994cakdep7tyqa9ffn2',
       { totalShares: 1000, vestedShares: 500, claimedShares: 318, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days')  },
       Status.IN_PROGRESS
     );
@@ -43,7 +43,7 @@ class MarloweSDK {
     const contract2 = new Contract(
       'contractID2',
       'Contract2',
-      'addr_test1qqc3suxnrnsejezh8yzg3qzfupxqn65v5dem2rpnmr60rvgv2ckqzwjtp8w854ua4rd3udc08y5hlnxz82xhml96967saa9fdr',
+      'addr_test1qzmzvy7e6h7hs6t4gsek4azkszd9pucmw2pwazpx2t6fna0q2ckh2rhm5s7cm765xeqjkm6xs4cm6j3994cakdep7tyqa9ffn2',
       { totalShares: 1000, vestedShares: 0, claimedShares: 0, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days')},
       Status.PENDING
     );
@@ -51,7 +51,7 @@ class MarloweSDK {
     const contract3 = new Contract(
       'contractID3',
       'Contract3',
-      'addr_test1qqc3suxnrnsejezh8yzg3qzfupxqn65v5dem2rpnmr60rvgv2ckqzwjtp8w854ua4rd3udc08y5hlnxz82xhml96967saa9fdr',
+      'addr_test1qzmzvy7e6h7hs6t4gsek4azkszd9pucmw2pwazpx2t6fna0q2ckh2rhm5s7cm765xeqjkm6xs4cm6j3994cakdep7tyqa9ffn2',
       { totalShares: 1000, vestedShares: 1000, claimedShares: 1000, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days')},
       Status.CLAIMED
     );
@@ -59,12 +59,21 @@ class MarloweSDK {
     const contract4 = new Contract(
       'contractID4',
       'Contract4',
-      'addr_test1qqc3suxnrnsejezh8yzg3qzfupxqn65v5dem2rpnmr60rvgv2ckqzwjtp8w854ua4rd3udc08y5hlnxz82xhml96967saa9fdr',
+      'addr_test1qzmzvy7e6h7hs6t4gsek4azkszd9pucmw2pwazpx2t6fna0q2ckh2rhm5s7cm765xeqjkm6xs4cm6j3994cakdep7tyqa9ffn2',
       { totalShares: 1000, vestedShares: 1000, claimedShares: 300, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days') },
       Status.CANCELLED
     );
 
-    const contracts = [contract, contract2, contract3, contract4];
+    const contract5 = new Contract(
+      'contractID5',
+      'Contract5',
+      'addr_test1qzmzvy7e6h7hs6t4gsek4azkszd9pucmw2pwazpx2t6fna0q2ckh2rhm5s7cm765xeqjkm6xs4cm6j3994cakdep7tyqa9ffn2',
+      { totalShares: 1000, vestedShares: 1000, claimedShares: 300, startDate:  moment().subtract(100, 'days'), endDate: moment().add(100, 'days'), nextVestDate: moment().add(15, 'days') },
+      Status.CREATED
+    );
+
+
+    const contracts = [contract, contract2, contract3, contract4, contract5];
     this.contracts = contracts;
 
     this.lucid = null;
