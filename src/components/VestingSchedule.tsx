@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MarloweSDK from '../services/MarloweSDK';
+import { Browser } from "@marlowe.io/runtime-lifecycle"
+import { RuntimeLifecycle } from "@marlowe.io/runtime-lifecycle/dist/apis/runtimeLifecycle"
+import { unAddressBech32, unPayoutId, unContractId } from "@marlowe.io/runtime-core"
+import * as O from 'fp-ts/lib/Option.js'
+import * as TE from "fp-ts/lib/TaskEither"
+import * as E from "fp-ts/lib/Either"
+import { pipe } from 'fp-ts/lib/function';
+import Contract from '../models/Contract';
+import moment from 'moment';
+import Status from '../models/Status';
 import NewVestingScheduleModal from './modals/NewVestingScheduleModal';
 import DepositVestingScheduleModal from './modals/DepositVestingScheduleModal';
 import EditVestingScheduleModal from './modals/EditVestingScheduleModal';
 import ClaimsModal from './modals/ClaimsModal';
-import Contract from '../models/Contract';
-import moment from 'moment';
-import Status from '../models/Status';
+
+const runtimeURL = `${process.env.MARLOWE_RUNTIME_WEB_URL}`;
 
 type VestingScheduleProps = {
-  sdk: MarloweSDK,
-  setAndShowToast: (title:string, message:any) => void
+  setAndShowToast: (title:string, message:any, isDanger: boolean) => void
 };
 
 enum VestingScheduleModal {
@@ -21,12 +28,16 @@ enum VestingScheduleModal {
   DEPOSIT = 'deposit',
 }
 
-const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast}) => {
-  const changeAddress = sdk.changeAddress || '';
-  const truncatedAddress = changeAddress.slice(0,18);
-  const sdkContracts = sdk.getContracts();
+const VestingSchedule: React.FC<VestingScheduleProps> = ({setAndShowToast}) => {
   const navigate = useNavigate();
-  const [contracts, setContracts] = useState<any[]>(sdkContracts);
+  const selectedAWalletExtension = localStorage.getItem('walletProvider');
+  if (!selectedAWalletExtension) { navigate('/'); }
+  const [sdk, setSdk] = useState<RuntimeLifecycle>();
+  const [changeAddress, setChangeAddress] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(false);
+
+  const truncatedAddress = changeAddress.slice(0,18);
+  const [contracts, setContracts] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showNewVestingScheduleModal, setShowNewVestingScheduleModal] = useState(false);
   const [showEditVestingScheduleModal, setShowEditVestingScheduleModal] = useState(false);
@@ -47,8 +58,51 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
         setShowModal(true);
         break;
     }
-
   };
+
+  const fetchData = async () => {
+    if (!selectedAWalletExtension) { navigate('/'); }
+    else {
+      const runtimeLifecycle = await Browser.mkRuntimeLifecycle(runtimeURL)(selectedAWalletExtension)()
+      setSdk(runtimeLifecycle)
+      const newChangeAddress = await runtimeLifecycle.wallet.getChangeAddress()
+      setChangeAddress(unAddressBech32(newChangeAddress))
+      await pipe(runtimeLifecycle.payouts.available(O.none)
+        , TE.match(
+          (err) => {
+            console.log("Error", err);
+            const response = err?.request?.response;
+            if (!response) { return }
+            const error = JSON.parse(response);
+            const { message } = error;
+            setAndShowToast(
+              'Available Payouts Request Failed',
+              <span className='text-color-white'>{message}</span>,
+              true
+            );
+          },
+          a => true))()
+      await pipe(runtimeLifecycle.payouts.withdrawn(O.none)
+        , TE.match(
+          (err) => {
+            console.log("Error", err);
+            const response = err?.request?.response;
+            if (!response) { return }
+            const error = JSON.parse(response);
+            const { message } = error;
+            setAndShowToast(
+              'Withdrawn Payouts Request Failed',
+              <span className='text-color-white'>{message}</span>,
+              true
+            );
+          },
+          a => true))()
+    }
+  }
+
+  useEffect( () => {
+    fetchData().catch( err => console.error(err));
+  });
 
   const closeModal = ( modalName: string) => {
     switch (modalName) {
@@ -67,19 +121,13 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
     }
   };
 
-  useEffect(() => {
-    const walletProvider = localStorage.getItem('walletProvider');
-    if (walletProvider && !changeAddress) {
-      navigate('/');
-    }
-  }, [changeAddress, navigate]);
-
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(changeAddress);
       setAndShowToast(
         'Address copied to clipboard',
-        <span>Copied <span className="font-weight-bold">{changeAddress}</span> to clipboard</span>
+        <span>Copied <span className="font-weight-bold">{changeAddress}</span> to clipboard</span>,
+        false
       );
     } catch (err) {
       console.error('Failed to copy address: ', err);
@@ -87,14 +135,16 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
   };
 
   const disconnectWallet = () => {
-    sdk.disconnectWallet();
-    localStorage.setItem('walletProvider', '');
+    localStorage.removeItem('walletProvider');
+    setChangeAddress('');
     setAndShowToast(
       'Disconnected wallet',
-      <span>Please connect a wallet to see a list of available payouts.</span>
+      <span className='text-color-white'>Please connect a wallet to see a list of available payouts.</span>,
+      false
     );
     navigate('/');
   }
+  
 
   const isManager = (contract: Contract) => {
     return contract.managingAddress === changeAddress;
@@ -253,4 +303,3 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
 };
 
 export default VestingSchedule;
-
