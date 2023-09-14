@@ -101,8 +101,8 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({setAndShowToast}) => {
   }
 
   useEffect( () => {
-    // fetchData().catch( err => console.error(err));
-  });
+    fetchData().catch(err => console.error(err));
+  },[selectedAWalletExtension, navigate]);
 
   const closeModal = ( modalName: string) => {
     switch (modalName) {
@@ -294,7 +294,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({setAndShowToast}) => {
           </tbody>
         </table>
       </div>
-      <NewVestingScheduleModal showModal={showNewVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.NEW)}  />
+      <NewVestingScheduleModal showModal={showNewVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.NEW) } changeAddress={changeAddress} />
       <DepositVestingScheduleModal showModal={showDepositVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.DEPOSIT)}  />
       <EditVestingScheduleModal showModal={showEditVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.EDIT)}  />
       <ClaimsModal showModal={showModal} closeModal={() => closeModal(VestingScheduleModal.CLAIM)}  />

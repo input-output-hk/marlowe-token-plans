@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
+import DatePicker from "react-datepicker";
 import './modal.scss';
+import "react-datepicker/dist/react-datepicker.css";
 
 interface NewVestingScheduleModalProps {
   showModal: boolean;
   closeModal: () => void;
+  changeAddress: string;
 }
 
-const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showModal, closeModal }) => {
+const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showModal, closeModal, changeAddress}) => {
 
   type FormData = {
     name: string;
     numberOfShares: string;
-    startDate: string;
-    endDate: string;
+    startDate: Date;
+    endDate: Date;
     vestingCycle: string;
     recipients: string[];
   };
@@ -20,8 +23,8 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
   const [formData, setFormData] = useState<FormData>({
     name: '',
     numberOfShares: '',
-    startDate: '',
-    endDate: '',
+    startDate: new Date,
+    endDate: new Date,
     vestingCycle: '',
     recipients: [],
   });
@@ -42,6 +45,13 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     setFormData({
       ...formData,
       [id]: value,
+    });
+  };
+
+  const handleDateInputChange = (date: Date | null, id: string) => {
+    setFormData({
+      ...formData,
+      [id]: date,
     });
   };
 
@@ -105,8 +115,8 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     setFormData({
       name: '',
       numberOfShares: '',
-      startDate: '',
-      endDate: '',
+      startDate: new Date,
+      endDate: new Date,
       vestingCycle: '',
       recipients: [],
     });
@@ -158,56 +168,65 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
                         />
                         {formErrors.name && <small className="text-danger">{formErrors.name}</small>}
                       </div>
-                      <div className="form-group my-3">
-                        <label htmlFor="numberOfShares">Enter value of shares for each recipient</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="numberOfShares"
-                          value={formData.numberOfShares}
-                          onChange={handleInputChange}
-                        />
-                        {formErrors.numberOfShares && <small className="text-danger">{formErrors.numberOfShares}</small>}
+                      <div className='row'>
+                        <div className="form-group my-3 col-6">
+                          <label htmlFor="numberOfShares">Enter value of shares for each recipient</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="numberOfShares"
+                            value={formData.numberOfShares}
+                            onChange={handleInputChange}
+                          />
+                          {formErrors.numberOfShares && <small className="text-danger">{formErrors.numberOfShares}</small>}
+                        </div>
                       </div>
+                      <p className='font-weight-bold mt-5'>Schedule</p>
+                      <div className='row'>
+                        <div className="form-group mb-3 col-6">
+                          <div className='row'>
+                            <label htmlFor="startDate">Start date</label>
+                          </div>
+                          <DatePicker
+                            selected={formData.startDate}
+                            onChange={(date) => handleDateInputChange(date, 'startDate')}
+                            minDate={new Date}
+                            className='form-control'
+                            wrapperClassName='col-12'
+                            showIcon={true}
+                          />
+                          {formErrors.startDate && <small className="text-danger">{formErrors.startDate}</small>}
+                        </div>
+                        <div className="form-group mb-3 col-6">
+                          <div className='row'>
+                            <label htmlFor="endDate">End date</label>
+                          </div>
+                          <DatePicker
+                            selected={formData.endDate}
+                            onChange={(date) => handleDateInputChange(date, 'endDate')}
+                            minDate={new Date}
+                            className='form-control'
+                            wrapperClassName='col-12'
+                            showIcon={true}
+                          />
+                          {formErrors.endDate && <small className="text-danger">{formErrors.endDate}</small>}
+                        </div>
 
-                      <p className='font-weight-bold mt-3'>Schedule</p>
-                      <div className="form-group my-3">
-                        <label htmlFor="startDate">Start date</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="startDate"
-                          value={formData.startDate}
-                          onChange={handleInputChange}
-                        />
-                        {formErrors.startDate && <small className="text-danger">{formErrors.startDate}</small>}
-                      </div>
-                      <div className="form-group my-3">
-                        <label htmlFor="endDate">End date</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="endDate"
-                          value={formData.endDate}
-                          onChange={handleInputChange}
-                        />
-                        {formErrors.endDate && <small className="text-danger">{formErrors.endDate}</small>}
-                      </div>
-
-                      <div className="form-group my-3">
-                        <label htmlFor="vestingCycle">Vesting cycle</label>
-                        <select
-                          value={formData.vestingCycle}
-                          className="form-control"
-                          id="vestingCycle"
-                          onChange={handleInputChange}
-                        >
-                          <option value="">Select a cycle</option>
-                          <option value="annually">Annually</option>
-                          <option value="monthly">monthly</option>
-                          {/* Add your options here */}
-                        </select>
-                        {formErrors.vestingCycle && <small className="text-danger">{formErrors.vestingCycle}</small>}
+                        <div className="form-group my-3 col-6">
+                          <label htmlFor="vestingCycle">Vesting cycle</label>
+                          <select
+                            value={formData.vestingCycle}
+                            className="form-control"
+                            id="vestingCycle"
+                            onChange={handleInputChange}
+                          >
+                            <option value="">Select a cycle</option>
+                            <option value="annually">Annually</option>
+                            <option value="monthly">monthly</option>
+                            {/* Add your options here */}
+                          </select>
+                          {formErrors.vestingCycle && <small className="text-danger">{formErrors.vestingCycle}</small>}
+                        </div>
                       </div>
                       <p className='font-weight-bold mt-3'>Recipients</p>
                       <div className="form-group my-3">
@@ -226,19 +245,28 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
   
                       </div>
                       <div className='wallet-list my-3'>
-                        <ul>
-                          {formData.recipients && formData.recipients.map((recipient, index) => {
-                            return <div key={index} className='row'>
-                              <div className='col-10'>
-                                {recipient}
-                                </div>
-                                <div className='col-2'>
-                                  <a className='font-weight-bold' data-recipient={recipient} onClick={handleRemoveRecipient}>X</a>
-                                </div>
-                            </div>
-                          })}
-                        </ul>
+                        {formData.recipients && formData.recipients.map((recipient, index) => {
+                          return <div key={index} className='row'>
+                            <div className='col-11'>
+                              {recipient}
+                              </div>
+                              <div className='col-1'>
+                                <a className='font-weight-bold text-decoration-none' data-recipient={recipient} onClick={handleRemoveRecipient}>X</a>
+                              </div>
+                          </div>
+                        })}
                       </div>
+
+                    <div className='col-12 my-3'>
+                      <hr className='mx-1'/>
+                    </div>
+
+                    <div className='col-12'>
+                      <p className='destination-address-title'>Your wallet address</p>
+                      <div className='container destination-address-container'>
+                        <p className='destination-address'>{changeAddress}</p>
+                      </div>
+                    </div>
                     </form>
                   </div>
                 </div>
