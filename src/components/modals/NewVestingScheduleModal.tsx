@@ -7,7 +7,17 @@ interface NewVestingScheduleModalProps {
 }
 
 const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showModal, closeModal }) => {
-  const [formData, setFormData] = useState({
+
+  type FormData = {
+    name: string;
+    numberOfShares: string;
+    startDate: string;
+    endDate: string;
+    vestingCycle: string;
+    recipients: string[];
+  };
+
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     numberOfShares: '',
     startDate: '',
@@ -25,11 +35,43 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     recipients: null,
   });
 
+  const [recipientInput, setRecipientInput] = useState('');
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setFormData({
       ...formData,
       [id]: value,
+    });
+  };
+
+  const handleRecipientChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setRecipientInput(value); // Set the current input value
+  };
+
+  const handleRecipientBlur = () => {
+    if (recipientInput) {
+      setFormData({
+        ...formData,
+        recipients: [...formData.recipients, recipientInput], // Add the current input value to the recipients array
+      });
+      setRecipientInput(''); // Reset the input field
+    }
+  };
+
+  const handleRecipientKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Prevents the default action of the enter key (form submission, in this case)
+      handleRecipientBlur();
+    }
+  };
+
+  const handleRemoveRecipient = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    const { recipient } = e.currentTarget.dataset;
+    setFormData({
+      ...formData,
+      recipients: formData.recipients.filter((r) => r !== recipient), // Remove the recipient from the array
     });
   };
 
@@ -175,17 +217,26 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
                           placeholder="Insert or select a wallet" 
                           className="form-control"
                           id="recipients"
-                          value={formData.recipients}
-                          onChange={handleInputChange}
+                          value={recipientInput}
+                          onChange={handleRecipientChange}
+                          onBlur={handleRecipientBlur}
+                          onKeyDown={handleRecipientKeyDown}
                         />
                         {formErrors.recipients && <small className="text-danger">{formErrors.recipients}</small>}
   
                       </div>
                       <div className='wallet-list my-3'>
                         <ul>
-                          <li>$BobsWallet</li>
-                          <li>$AliceWallet</li>
-                          <li>addr1v94725lv4umktv89cg2t04qjn4qq3p6l6zegvtx5es...</li>
+                          {formData.recipients && formData.recipients.map((recipient, index) => {
+                            return <div key={index} className='row'>
+                              <div className='col-10'>
+                                {recipient}
+                                </div>
+                                <div className='col-2'>
+                                  <a className='font-weight-bold' data-recipient={recipient} onClick={handleRemoveRecipient}>X</a>
+                                </div>
+                            </div>
+                          })}
                         </ul>
                       </div>
                     </form>

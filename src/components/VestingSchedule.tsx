@@ -101,7 +101,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({setAndShowToast}) => {
   }
 
   useEffect( () => {
-    fetchData().catch( err => console.error(err));
+    // fetchData().catch( err => console.error(err));
   });
 
   const closeModal = ( modalName: string) => {
