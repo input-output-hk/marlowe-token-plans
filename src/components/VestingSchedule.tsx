@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Browser } from "@marlowe.io/runtime-lifecycle"
 import { RuntimeLifecycle } from "@marlowe.io/runtime-lifecycle/dist/apis/runtimeLifecycle"
-import { unAddressBech32, unPayoutId, unContractId } from "@marlowe.io/runtime-core"
+import { unAddressBech32 } from "@marlowe.io/runtime-core"
 import * as O from 'fp-ts/lib/Option.js'
 import * as TE from "fp-ts/lib/TaskEither"
-import * as E from "fp-ts/lib/Either"
 import { pipe } from 'fp-ts/lib/function';
 import Contract from '../models/Contract';
 import moment from 'moment';

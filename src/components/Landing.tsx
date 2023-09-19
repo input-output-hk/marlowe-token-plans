@@ -62,7 +62,7 @@ const Landing: React.FC<LandingProps> = ({ setAndShowToast }) => {
           <img src="/images/marlowe-logo-primary.svg" alt="Logo" className="mb-4" id="marlowe-logo" />
         </div>
         <div className="row">
-          <p className="title">Reward withdrawals prototype</p>
+          <p className="title">Vesting Schedule prototype</p>
         </div>
         <div className="row justify-content-center mt-4">
           <div className="col-12 ">

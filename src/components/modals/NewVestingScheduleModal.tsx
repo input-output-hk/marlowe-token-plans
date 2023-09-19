@@ -17,7 +17,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     startDate: Date;
     endDate: Date;
     vestingCycle: string;
-    recipients: string[];
+    recipient: string;
   };
 
   const [formData, setFormData] = useState<FormData>({
@@ -26,7 +26,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     startDate: new Date,
     endDate: new Date,
     vestingCycle: '',
-    recipients: [],
+    recipient: '',
   });
 
   const [formErrors, setFormErrors] = useState({
@@ -55,36 +55,6 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     });
   };
 
-  const handleRecipientChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setRecipientInput(value); // Set the current input value
-  };
-
-  const handleRecipientBlur = () => {
-    if (recipientInput) {
-      setFormData({
-        ...formData,
-        recipients: [...formData.recipients, recipientInput], // Add the current input value to the recipients array
-      });
-      setRecipientInput(''); // Reset the input field
-    }
-  };
-
-  const handleRecipientKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault(); // Prevents the default action of the enter key (form submission, in this case)
-      handleRecipientBlur();
-    }
-  };
-
-  const handleRemoveRecipient = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    const { recipient } = e.currentTarget.dataset;
-    setFormData({
-      ...formData,
-      recipients: formData.recipients.filter((r) => r !== recipient), // Remove the recipient from the array
-    });
-  };
-
   const handleSubmit = () => {
     let valid = true;
     let errors = {
@@ -93,7 +63,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
       startDate: null,
       endDate: null,
       vestingCycle: null,
-      recipients: null,
+      recipient: null,
     };
 
     for (const [key, value] of Object.entries(formData)) {
@@ -118,7 +88,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
       startDate: new Date,
       endDate: new Date,
       vestingCycle: '',
-      recipients: [],
+      recipient: '',
     });
     setFormErrors({
       name: null,
@@ -126,7 +96,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
       startDate: null,
       endDate: null,
       vestingCycle: null,
-      recipients: null,
+      recipient: null,
     });
     closeModal();
   }
@@ -222,41 +192,24 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
                           >
                             <option value="">Select a cycle</option>
                             <option value="annually">Annually</option>
-                            <option value="monthly">monthly</option>
-                            {/* Add your options here */}
+                            <option value="monthly">Monthly</option>
                           </select>
                           {formErrors.vestingCycle && <small className="text-danger">{formErrors.vestingCycle}</small>}
                         </div>
                       </div>
                       <p className='font-weight-bold mt-3'>Recipients</p>
                       <div className="form-group my-3">
-                        <label htmlFor="recipients">Add recipients to each receive the vesting schedule</label>
+                        <label htmlFor="recipient">Add the recipient to receive the vesting schedule</label>
                         <input
                           type="text"
-                          placeholder="Insert or select a wallet" 
                           className="form-control"
-                          id="recipients"
-                          value={recipientInput}
-                          onChange={handleRecipientChange}
-                          onBlur={handleRecipientBlur}
-                          onKeyDown={handleRecipientKeyDown}
+                          id="recipient"
+                          value={formData.recipient}
+                          onChange={handleInputChange}
                         />
-                        {formErrors.recipients && <small className="text-danger">{formErrors.recipients}</small>}
+                        {formErrors.recipient && <small className="text-danger">{formErrors.recipient}</small>}
   
                       </div>
-                      <div className='wallet-list my-3'>
-                        {formData.recipients && formData.recipients.map((recipient, index) => {
-                          return <div key={index} className='row'>
-                            <div className='col-11'>
-                              {recipient}
-                              </div>
-                              <div className='col-1'>
-                                <a className='font-weight-bold text-decoration-none' data-recipient={recipient} onClick={handleRemoveRecipient}>X</a>
-                              </div>
-                          </div>
-                        })}
-                      </div>
-
                     <div className='col-12 my-3'>
                       <hr className='mx-1'/>
                     </div>
