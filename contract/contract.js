@@ -42,7 +42,7 @@ const vestingContract = function(
     }
 
     const contractForPeriod = function(currentPeriod) {
-      // NOTE: Currently this logic presents the withdrwal and cancel for the last period, even though it doesn't make sense
+      // NOTE: Currently this logic presents the withdrawal and cancel for the last period, even though it doesn't make sense
       // because there is nothing to cancel, and even if the employee does a partial withdrwal, they receive the balance in their account.
       const continuation = (currentPeriod == numberOfPeriods) ? "close" : contractForPeriod(currentPeriod + 1);
       const vestingDate = contractStart + currentPeriod * periodLength;

@@ -28,7 +28,7 @@
         }
 
         const contractForPeriod = function(currentPeriod:number) {
-            // NOTE: Currently this logic presents the withdrwal and cancel for the last period, even though it doesn't make sense
+            // NOTE: Currently this logic presents the withdrawal and cancel for the last period, even though it doesn't make sense
             // because there is nothing to cancel, and even if the employee does a partial withdrwal, they receive the balance in their account.
             // If we want all, but the last, we can use the commented line below instead:
             // const continuation = (currentPeriod > (numberOfPeriods - 2)) ? Close : contractForPeriod(currentPeriod + 1);
