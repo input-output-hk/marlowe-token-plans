@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import DatePicker from "react-datepicker";
+import vestingContract from '../../../contract/vestingContract';
 import './modal.scss';
 import "react-datepicker/dist/react-datepicker.css";
 
