@@ -4,9 +4,11 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Landing from './Landing';
 import VestingSchedule from './VestingSchedule';
 import ToastMessage from './ToastMessage';
+import MarloweSDK from '../services/MarloweSDK';
 
 
 const App: React.FC = () => {
+  const [sdk, setSdk] = useState(new MarloweSDK());
   const [toasts, setToasts] = useState<any[]>([]);
 
   const setAndShowToast = (title: string, message: React.ReactNode) => {
@@ -21,8 +23,8 @@ const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Landing setAndShowToast={setAndShowToast} />} />
-        <Route path="/vesting-schedules" element={<VestingSchedule setAndShowToast={setAndShowToast} />} />
+        <Route path="/" element={<Landing sdk={sdk} setAndShowToast={setAndShowToast} />} />
+        <Route path="/vesting-schedules" element={<VestingSchedule sdk={sdk} setAndShowToast={setAndShowToast} />} />
       </Routes>
     <div className="toast-container position-fixed bottom-0 end-0 p-3">
       {toasts.map(toast => (

@@ -1,21 +1,38 @@
-import React, { } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import MarloweSDK from '../services/MarloweSDK';
 
-declare global {
-  interface Window {
-    cardano: any;
-  }
-}
+// declare global {
+//   interface Window {
+//     cardano: any;
+//   }
+// }
 
 type LandingProps = {
+  sdk: MarloweSDK;
   setAndShowToast: (title: string, message: any, isDanger: boolean) => void
 };
 
-const Landing: React.FC<LandingProps> = ({ setAndShowToast }) => {
+const Landing: React.FC<LandingProps> = ({ sdk, setAndShowToast }) => {
   const navigate = useNavigate();
   const selectedAWalletExtension = localStorage.getItem('walletProvider');
   const validWalletExtentions = ['nami', 'eternl'];
   if (selectedAWalletExtension) { navigate('/vesting-schedules') }
+
+  useEffect(() => {
+    const walletProvider = localStorage.getItem('walletProvider');
+    if (walletProvider) {
+      try {
+        (async () => {
+          await sdk.connectWallet(walletProvider);
+          navigate('/vesting-schedules');
+        })();
+      } catch (e) {
+        console.log("USE EFFECT ON LANDNING PAGE FAILED: ", e)
+        localStorage.setItem('walletProvider', '');
+      }
+    }
+  }, [sdk, navigate]);
 
   async function connectWallet(walletName: string) {
     localStorage.setItem('walletProvider', walletName);
