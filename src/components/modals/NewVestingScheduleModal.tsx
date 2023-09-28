@@ -84,7 +84,19 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
         valid = false;
         errors = { ...errors, [key]: 'This field is required' };
       }
+
+      if (key === 'startDate' || key === 'endDate') {
+        const dateDifference = Math.abs(moment(formData.endDate).diff(moment(formData.startDate), 'days'));
+        const cycleLength = cycleMap(formData.vestingCycle);
+
+        if (dateDifference < cycleLength || dateDifference % cycleLength !== 0) {
+            valid = false;
+            errors = { ...errors, [key]: 'Start and end dates do not align with the selected vesting cycle' };
+        }
+      }
+
     }
+
 
     setFormErrors(errors);
 
@@ -92,19 +104,24 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
       // All fields are filled, proceed with form submission
       const millisecondsInDay = 1000 * 60 * 60 * 24;
       const periodLengthInDays = cycleMap(formData.vestingCycle);
-      const numberOfPeriods = (formData.endDate.getTime() - formData.startDate.getTime()) / (millisecondsInDay);
+      const numberOfPeriods = Math.round((formData.endDate.getTime() - formData.startDate.getTime()) / (millisecondsInDay) / periodLengthInDays);
       const vestingAmountPerPeriod = formData.numberOfShares / numberOfPeriods;
+      const employerDepositDeadline = moment(formData.startDate).add((periodLengthInDays -1), 'days').toDate().getTime();
+
+      const vestingContractParams = {
+        numberOfPeriods: numberOfPeriods,
+        periodLength: millisecondsInDay * periodLengthInDays,
+        vestingToken: { currency_symbol: '', token_name: '' },
+        vestingAmountPerPeriod: vestingAmountPerPeriod,
+        contractStart: formData.startDate.getTime(),
+        employerDepositDeadline: employerDepositDeadline,
+        employee: { role_token: 'Employee' },
+        employer: { role_token: 'Employer' }
+      };
+
+      console.log("VESTING CONTRACT PARAMS: ", vestingContractParams);
       const contractJSON = JSON.stringify(
-        vestingContract({
-          numberOfPeriods: numberOfPeriods,
-          periodLength: millisecondsInDay * periodLengthInDays,
-          vestingToken: { currency_symbol: '', token_name: '' },
-          vestingAmountPerPeriod: vestingAmountPerPeriod,
-          contractStart: formData.startDate.getTime(),
-          employerDepositDeadline: moment(formData.startDate).add(periodLengthInDays, 'days').toDate().getTime(),
-          employee: { role_token: 'Employee' },
-          employer: { role_token: 'Employer' }
-        })
+        vestingContract(vestingContractParams)
       )
       console.log('Contract JSON to be Submitted: ', contractJSON);
     }

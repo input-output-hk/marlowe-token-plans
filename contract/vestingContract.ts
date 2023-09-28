@@ -146,18 +146,18 @@ const vestingContract = ({
 
 export default vestingContract;
 
-// An example. Use `nodejs contract.ts` to print the contract.
-console.log(
-  JSON.stringify(
-    vestingContract({
-      numberOfPeriods: 3,
-      periodLength: 1000 * 60 * 60 * 2, // two hours
-      vestingToken: { currency_symbol: '', token_name: '' },
-      vestingAmountPerPeriod: 1000 * 1000000,
-      contractStart: 1726081548000,
-      employerDepositDeadline: 1726081549000,
-      employee: { role_token: 'Employee' },
-      employer: { role_token: 'Employer' }
-    })
-  )
-);
+// // An example. Use `nodejs contract.ts` to print the contract.
+// console.log(
+//   JSON.stringify(
+//     vestingContract({
+//       numberOfPeriods: 3,
+//       periodLength: 1000 * 60 * 60 * 2, // two hours
+//       vestingToken: { currency_symbol: '', token_name: '' },
+//       vestingAmountPerPeriod: 1000 * 1000000,
+//       contractStart: 1726081548000,
+//       employerDepositDeadline: 1726081549000,
+//       employee: { role_token: 'Employee' },
+//       employer: { role_token: 'Employer' }
+//     })
+//   )
+// );
