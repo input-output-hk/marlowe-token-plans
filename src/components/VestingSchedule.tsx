@@ -40,6 +40,8 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
   const [contracts, setContracts] = useState<any[]>(sdkContracts);
   // const [contracts, setContracts] = useState<any[]>([]);
 
+  const contract = contracts[0];
+
   const [changeAddress, setChangeAddress] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false);
 
@@ -249,11 +251,13 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
         <div className='col text-left'>
           <p className="title">Select rewards to withdraw</p>
         </div>
-        <div className='col text-right'>
-          <button className='btn btn-outline-primary font-weight-bold' onClick={() => openModal('new')}>
-            Create a vesting schedule
-          </button>
-        </div>
+        {(isManager(contract)) ? 
+          <div className='col text-right'>
+            <button className='btn btn-outline-primary font-weight-bold' onClick={() => openModal('new')}>
+              Create a vesting schedule
+            </button>
+          </div> : <div></div>
+        }
 
       </div>
       <div className="my-5">
