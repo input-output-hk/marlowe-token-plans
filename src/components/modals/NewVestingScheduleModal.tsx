@@ -38,8 +38,6 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     recipient: null,
   });
 
-  const [recipientInput, setRecipientInput] = useState('');
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setFormData({
