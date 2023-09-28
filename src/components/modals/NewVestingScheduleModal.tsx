@@ -35,7 +35,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     startDate: null,
     endDate: null,
     vestingCycle: null,
-    recipients: null,
+    recipient: null,
   });
 
   const [recipientInput, setRecipientInput] = useState('');
