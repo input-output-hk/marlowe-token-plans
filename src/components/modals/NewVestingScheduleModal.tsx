@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DatePicker from "react-datepicker";
 import vestingContract from '../../../contract/vestingContract';
+import moment from 'moment';
 import './modal.scss';
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -14,7 +15,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
 
   type FormData = {
     name: string;
-    numberOfShares: string;
+    numberOfShares: number;
     startDate: Date;
     endDate: Date;
     vestingCycle: string;
@@ -23,7 +24,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
 
   const [formData, setFormData] = useState<FormData>({
     name: '',
-    numberOfShares: '',
+    numberOfShares: 0,
     startDate: new Date,
     endDate: new Date,
     vestingCycle: '',
@@ -54,6 +55,19 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     });
   };
 
+  const cycleMap = (cycle: string) => {
+    switch (cycle) {
+      case 'annually':
+        return 365;
+      case 'quarterly':
+        return 90;
+      case 'monthly':
+        return 30;
+      default:
+        return 0;
+    }
+  }
+
   const handleSubmit = () => {
     let valid = true;
     let errors = {
@@ -76,14 +90,30 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
 
     if (valid) {
       // All fields are filled, proceed with form submission
-      console.log('Form submitted with', formData);
+      const millisecondsInDay = 1000 * 60 * 60 * 24;
+      const periodLengthInDays = cycleMap(formData.vestingCycle);
+      const numberOfPeriods = (formData.endDate.getTime() - formData.startDate.getTime()) / (millisecondsInDay);
+      const vestingAmountPerPeriod = formData.numberOfShares / numberOfPeriods;
+      const contractJSON = JSON.stringify(
+        vestingContract({
+          numberOfPeriods: numberOfPeriods,
+          periodLength: millisecondsInDay * periodLengthInDays,
+          vestingToken: { currency_symbol: '', token_name: '' },
+          vestingAmountPerPeriod: vestingAmountPerPeriod,
+          contractStart: formData.startDate.getTime(),
+          employerDepositDeadline: moment(formData.startDate).add(periodLengthInDays, 'days').toDate().getTime(),
+          employee: { role_token: 'Employee' },
+          employer: { role_token: 'Employer' }
+        })
+      )
+      console.log('Contract JSON to be Submitted: ', contractJSON);
     }
   };
 
   const handleClose = () => {
     setFormData({
       name: '',
-      numberOfShares: '',
+      numberOfShares: 0,
       startDate: new Date,
       endDate: new Date,
       vestingCycle: '',
@@ -191,6 +221,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
                           >
                             <option value="">Select a cycle</option>
                             <option value="annually">Annually</option>
+                            <option value="quarterly">Quarterly</option>
                             <option value="monthly">Monthly</option>
                           </select>
                           {formErrors.vestingCycle && <small className="text-danger">{formErrors.vestingCycle}</small>}
