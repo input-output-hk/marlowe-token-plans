@@ -14,6 +14,7 @@ import NewVestingScheduleModal from './modals/NewVestingScheduleModal';
 import DepositVestingScheduleModal from './modals/DepositVestingScheduleModal';
 import CancelVestingScheduleModal from './modals/CancelVestingScheduleModal';
 import ClaimsModal from './modals/ClaimsModal';
+import ProgressMeter from './widgets/ProgressMeter';
 
 const runtimeURL = `${process.env.MARLOWE_RUNTIME_WEB_URL}`;
 
@@ -208,9 +209,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
       <div className='container'>
         <div className='row justify-content-center'>
           <div className='col-6'>
-            <div className="progress">
-              <div className={classNames} role="progressbar" style={{width: `${percentage}%`}} aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}></div>
-            </div>
+            <ProgressMeter percentage={percentage} classNames={classNames} />
           </div>
         </div>
         <div className='row justify-content-center'>
@@ -305,9 +304,9 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
         </table>
       </div>
       <NewVestingScheduleModal showModal={showNewVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.NEW) } changeAddress={changeAddress} />
-      <DepositVestingScheduleModal showModal={showDepositVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.DEPOSIT)}  />
-      <CancelVestingScheduleModal showModal={showEditVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.CANCEL)} changeAddress={changeAddress}  />
-      <ClaimsModal showModal={showModal} closeModal={() => closeModal(VestingScheduleModal.CLAIM)}  />
+      <DepositVestingScheduleModal showModal={showDepositVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.DEPOSIT)} />
+      <CancelVestingScheduleModal showModal={showEditVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.CANCEL)} changeAddress={changeAddress} />
+      <ClaimsModal showModal={showModal} closeModal={() => closeModal(VestingScheduleModal.CLAIM)}  changeAddress={changeAddress} />
     </div>
   );
 };
