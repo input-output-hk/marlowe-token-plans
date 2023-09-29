@@ -21,10 +21,19 @@ const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal, changeA
     claimedShares: '0',
   }
   const [sharesLeft, setSharesLeft] = useState(Number(claim.vestedShares))
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
 
   const handleSharesLeft = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setSharesLeft(Number(claim.vestedShares) - Number(value))
+    const sharesLeftValue = Number(claim.vestedShares) - Number(value);
+    setSharesLeft(sharesLeftValue);
+
+    // Set validation message based on sharesLeftValue
+    if (sharesLeftValue < 0) {
+      setValidationMessage("Not enough shares to claim, please select a different amount");
+    } else {
+      setValidationMessage(null);
+    }
   }
 
   return (
@@ -69,6 +78,7 @@ const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal, changeA
                     <span className="position-absolute end-0 top-50 translate-middle-y font-weight-bold" style={{ paddingRight: '20px', paddingTop: '30px' }}>
                       {sharesLeft} left
                     </span>
+                    {validationMessage && <small className="text-danger mt-2 d-block">{validationMessage}</small>}
                   </div>
 
                   <div className='col-12 my-3'>
