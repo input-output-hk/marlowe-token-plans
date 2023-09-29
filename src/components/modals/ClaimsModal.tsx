@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import ClaimDetail from '../widgets/ClaimDetail';
 import moment from 'moment';
 import ProgressMeter from '../widgets/ProgressMeter';
@@ -19,6 +19,12 @@ const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal, changeA
     totalShares: '1000',
     vestedShares: '100',
     claimedShares: '0',
+  }
+  const [sharesLeft, setSharesLeft] = useState(Number(claim.vestedShares))
+
+  const handleSharesLeft = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setSharesLeft(Number(claim.vestedShares) - Number(value))
   }
 
   return (
@@ -56,10 +62,15 @@ const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal, changeA
                     <ProgressMeter percentage={Number(claim.vestedShares) / Number(claim.totalShares) * 100} classNames="progress-bar" />
                     <hr className='mx-1'/>
                   </div>
-                  <div className='col-12'>
+
+                  <div className='col-12 position-relative'>
                     <label htmlFor="amountToClaim" className="form-label">Enter number of shares to claim</label>
-                    <input type="number" className="form-control shadow" max={claim.vestedShares} min={1} />
+                    <input type="number" onChange={handleSharesLeft} className="form-control shadow text-color-primary font-weight-bold" max={claim.vestedShares} min={1} />
+                    <span className="position-absolute end-0 top-50 translate-middle-y font-weight-bold" style={{ paddingRight: '20px', paddingTop: '30px' }}>
+                      {sharesLeft} left
+                    </span>
                   </div>
+
                   <div className='col-12 my-3'>
                     <hr className='mx-1'/>
                     <p className='transfer-title'>
