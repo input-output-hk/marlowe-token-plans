@@ -17,7 +17,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     name: string;
     numberOfShares: number;
     startDate: Date;
-    endDate: Date;
+    numberOfCycles: number;
     vestingCycle: string;
     recipient: string;
   };
@@ -26,7 +26,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     name: '',
     numberOfShares: 0,
     startDate: new Date,
-    endDate: new Date,
+    numberOfCycles: 1,
     vestingCycle: '',
     recipient: '',
   });
@@ -35,7 +35,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     name: null,
     numberOfShares: null,
     startDate: null,
-    endDate: null,
+    numberOfCycles: null,
     vestingCycle: null,
     recipient: null,
   });
@@ -74,7 +74,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
       name: null,
       numberOfShares: null,
       startDate: null,
-      endDate: null,
+      numberOfCycles: null,
       vestingCycle: null,
       recipient: null,
     };
@@ -84,17 +84,6 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
         valid = false;
         errors = { ...errors, [key]: 'This field is required' };
       }
-
-      if (key === 'startDate' || key === 'endDate') {
-        const dateDifference = Math.abs(moment(formData.endDate).diff(moment(formData.startDate), 'days'));
-        const cycleLength = cycleMap(formData.vestingCycle);
-
-        if (dateDifference < cycleLength || dateDifference % cycleLength !== 0) {
-            valid = false;
-            errors = { ...errors, [key]: 'Start and end dates do not align with the selected vesting cycle' };
-        }
-      }
-
     }
 
 
@@ -104,7 +93,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
       // All fields are filled, proceed with form submission
       const millisecondsInDay = 1000 * 60 * 60 * 24;
       const periodLengthInDays = cycleMap(formData.vestingCycle);
-      const numberOfPeriods = Math.round((formData.endDate.getTime() - formData.startDate.getTime()) / (millisecondsInDay) / periodLengthInDays);
+      const numberOfPeriods = formData.numberOfCycles;
       const vestingAmountPerPeriod = formData.numberOfShares / numberOfPeriods;
       const employerDepositDeadline = moment(formData.startDate).add((periodLengthInDays -1), 'days').toDate().getTime();
 
@@ -132,7 +121,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
       name: '',
       numberOfShares: 0,
       startDate: new Date,
-      endDate: new Date,
+      numberOfCycles: 1,
       vestingCycle: '',
       recipient: '',
     });
@@ -140,7 +129,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
       name: null,
       numberOfShares: null,
       startDate: null,
-      endDate: null,
+      numberOfCycles: null,
       vestingCycle: null,
       recipient: null,
     });
@@ -215,19 +204,29 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
                         </div>
                         <div className="form-group mb-3 col-6">
                           <div className='row'>
-                            <label htmlFor="endDate">End date</label>
+                            <label htmlFor="numberOfCycles">Number of Cycles</label>
                           </div>
-                          <DatePicker
-                            selected={formData.endDate}
-                            onChange={(date) => handleDateInputChange(date, 'endDate')}
-                            minDate={new Date}
-                            className='form-control'
-                            wrapperClassName='col-12'
-                            showIcon={true}
-                          />
-                          {formErrors.endDate && <small className="text-danger">{formErrors.endDate}</small>}
+                          <select
+                            value={formData.numberOfCycles}
+                            className="form-control"
+                            id="numberOfCycles"
+                            onChange={handleInputChange}
+                          >
+                            <option value="">Select number of Cycles</option>
+                            <option value={1}>1</option>
+                            <option value={2}>2</option>
+                            <option value={3}>3</option>
+                            <option value={4}>4</option>
+                            <option value={5}>5</option>
+                            <option value={6}>6</option>
+                            <option value={7}>7</option>
+                            <option value={8}>8</option>
+                            <option value={9}>9</option>
+                            <option value={10}>10</option>
+                          </select>
+                          {formErrors.vestingCycle && <small className="text-danger">{formErrors.vestingCycle}</small>}
                         </div>
-
+ 
                         <div className="form-group my-3 col-6">
                           <label htmlFor="vestingCycle">Vesting cycle</label>
                           <select
