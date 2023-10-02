@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Browser } from "@marlowe.io/runtime-lifecycle"
 import { RuntimeLifecycle } from "@marlowe.io/runtime-lifecycle/dist/apis/runtimeLifecycle"
-import { unAddressBech32, unPayoutId, unContractId } from "@marlowe.io/runtime-core"
+import { unAddressBech32 } from "@marlowe.io/runtime-core"
 import * as O from 'fp-ts/lib/Option.js'
 import * as TE from "fp-ts/lib/TaskEither"
-import * as E from "fp-ts/lib/Either"
 import { pipe } from 'fp-ts/lib/function';
 import Contract from '../models/Contract';
 import moment from 'moment';
@@ -101,8 +100,8 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({setAndShowToast}) => {
   }
 
   useEffect( () => {
-    fetchData().catch( err => console.error(err));
-  });
+    fetchData().catch(err => console.error(err));
+  },[selectedAWalletExtension, navigate]);
 
   const closeModal = ( modalName: string) => {
     switch (modalName) {
@@ -294,7 +293,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({setAndShowToast}) => {
           </tbody>
         </table>
       </div>
-      <NewVestingScheduleModal showModal={showNewVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.NEW)}  />
+      <NewVestingScheduleModal showModal={showNewVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.NEW) } changeAddress={changeAddress} />
       <DepositVestingScheduleModal showModal={showDepositVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.DEPOSIT)}  />
       <EditVestingScheduleModal showModal={showEditVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.EDIT)}  />
       <ClaimsModal showModal={showModal} closeModal={() => closeModal(VestingScheduleModal.CLAIM)}  />

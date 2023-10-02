@@ -1,28 +1,43 @@
 import React, { useState } from 'react';
+import DatePicker from "react-datepicker";
+import vestingContract from '../../../contract/vestingContract';
+import moment from 'moment';
 import './modal.scss';
+import "react-datepicker/dist/react-datepicker.css";
 
 interface NewVestingScheduleModalProps {
   showModal: boolean;
   closeModal: () => void;
+  changeAddress: string;
 }
 
-const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showModal, closeModal }) => {
-  const [formData, setFormData] = useState({
+const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showModal, closeModal, changeAddress}) => {
+
+  type FormData = {
+    name: string;
+    numberOfShares: number;
+    startDate: Date;
+    numberOfCycles: number;
+    vestingCycle: string;
+    recipient: string;
+  };
+
+  const [formData, setFormData] = useState<FormData>({
     name: '',
-    numberOfShares: '',
-    startDate: '',
-    endDate: '',
+    numberOfShares: 0,
+    startDate: new Date,
+    numberOfCycles: 1,
     vestingCycle: '',
-    recipients: [],
+    recipient: '',
   });
 
   const [formErrors, setFormErrors] = useState({
     name: null,
     numberOfShares: null,
     startDate: null,
-    endDate: null,
+    numberOfCycles: null,
     vestingCycle: null,
-    recipients: null,
+    recipient: null,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -33,15 +48,35 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     });
   };
 
+  const handleDateInputChange = (date: Date | null, id: string) => {
+    setFormData({
+      ...formData,
+      [id]: date,
+    });
+  };
+
+  const cycleMap = (cycle: string) => {
+    switch (cycle) {
+      case 'annually':
+        return 365;
+      case 'quarterly':
+        return 90;
+      case 'monthly':
+        return 30;
+      default:
+        return 0;
+    }
+  }
+
   const handleSubmit = () => {
     let valid = true;
     let errors = {
       name: null,
       numberOfShares: null,
       startDate: null,
-      endDate: null,
+      numberOfCycles: null,
       vestingCycle: null,
-      recipients: null,
+      recipient: null,
     };
 
     for (const [key, value] of Object.entries(formData)) {
@@ -51,30 +86,52 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
       }
     }
 
+
     setFormErrors(errors);
 
     if (valid) {
       // All fields are filled, proceed with form submission
-      console.log('Form submitted with', formData);
+      const millisecondsInDay = 1000 * 60 * 60 * 24;
+      const periodLengthInDays = cycleMap(formData.vestingCycle);
+      const numberOfPeriods = formData.numberOfCycles;
+      const vestingAmountPerPeriod = formData.numberOfShares / numberOfPeriods;
+      const employerDepositDeadline = moment(formData.startDate).add((periodLengthInDays -1), 'days').toDate().getTime();
+
+      const vestingContractParams = {
+        numberOfPeriods: numberOfPeriods,
+        periodLength: millisecondsInDay * periodLengthInDays,
+        vestingToken: { currency_symbol: '', token_name: '' },
+        vestingAmountPerPeriod: vestingAmountPerPeriod,
+        contractStart: formData.startDate.getTime(),
+        employerDepositDeadline: employerDepositDeadline,
+        employee: { role_token: 'Employee' },
+        employer: { role_token: 'Employer' }
+      };
+
+      console.log("VESTING CONTRACT PARAMS: ", vestingContractParams);
+      const contractJSON = JSON.stringify(
+        vestingContract(vestingContractParams)
+      )
+      console.log('Contract JSON to be Submitted: ', contractJSON);
     }
   };
 
   const handleClose = () => {
     setFormData({
       name: '',
-      numberOfShares: '',
-      startDate: '',
-      endDate: '',
+      numberOfShares: 0,
+      startDate: new Date,
+      numberOfCycles: 1,
       vestingCycle: '',
-      recipients: [],
+      recipient: '',
     });
     setFormErrors({
       name: null,
       numberOfShares: null,
       startDate: null,
-      endDate: null,
+      numberOfCycles: null,
       vestingCycle: null,
-      recipients: null,
+      recipient: null,
     });
     closeModal();
   }
@@ -116,78 +173,99 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
                         />
                         {formErrors.name && <small className="text-danger">{formErrors.name}</small>}
                       </div>
-                      <div className="form-group my-3">
-                        <label htmlFor="numberOfShares">Enter value of shares for each recipient</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="numberOfShares"
-                          value={formData.numberOfShares}
-                          onChange={handleInputChange}
-                        />
-                        {formErrors.numberOfShares && <small className="text-danger">{formErrors.numberOfShares}</small>}
+                      <div className='row'>
+                        <div className="form-group my-3 col-6">
+                          <label htmlFor="numberOfShares">Enter value of shares for each recipient</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="numberOfShares"
+                            value={formData.numberOfShares}
+                            onChange={handleInputChange}
+                          />
+                          {formErrors.numberOfShares && <small className="text-danger">{formErrors.numberOfShares}</small>}
+                        </div>
                       </div>
-
-                      <p className='font-weight-bold mt-3'>Schedule</p>
-                      <div className="form-group my-3">
-                        <label htmlFor="startDate">Start date</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="startDate"
-                          value={formData.startDate}
-                          onChange={handleInputChange}
-                        />
-                        {formErrors.startDate && <small className="text-danger">{formErrors.startDate}</small>}
-                      </div>
-                      <div className="form-group my-3">
-                        <label htmlFor="endDate">End date</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="endDate"
-                          value={formData.endDate}
-                          onChange={handleInputChange}
-                        />
-                        {formErrors.endDate && <small className="text-danger">{formErrors.endDate}</small>}
-                      </div>
-
-                      <div className="form-group my-3">
-                        <label htmlFor="vestingCycle">Vesting cycle</label>
-                        <select
-                          value={formData.vestingCycle}
-                          className="form-control"
-                          id="vestingCycle"
-                          onChange={handleInputChange}
-                        >
-                          <option value="">Select a cycle</option>
-                          <option value="annually">Annually</option>
-                          <option value="monthly">monthly</option>
-                          {/* Add your options here */}
-                        </select>
-                        {formErrors.vestingCycle && <small className="text-danger">{formErrors.vestingCycle}</small>}
+                      <p className='font-weight-bold mt-5'>Schedule</p>
+                      <div className='row'>
+                        <div className="form-group mb-3 col-6">
+                          <div className='row'>
+                            <label htmlFor="startDate">Start date</label>
+                          </div>
+                          <DatePicker
+                            selected={formData.startDate}
+                            onChange={(date) => handleDateInputChange(date, 'startDate')}
+                            minDate={new Date}
+                            className='form-control'
+                            wrapperClassName='col-12'
+                            showIcon={true}
+                          />
+                          {formErrors.startDate && <small className="text-danger">{formErrors.startDate}</small>}
+                        </div>
+                        <div className="form-group mb-3 col-6">
+                          <div className='row'>
+                            <label htmlFor="numberOfCycles">Number of Cycles</label>
+                          </div>
+                          <select
+                            value={formData.numberOfCycles}
+                            className="form-control"
+                            id="numberOfCycles"
+                            onChange={handleInputChange}
+                          >
+                            <option value="">Select number of Cycles</option>
+                            <option value={1}>1</option>
+                            <option value={2}>2</option>
+                            <option value={3}>3</option>
+                            <option value={4}>4</option>
+                            <option value={5}>5</option>
+                            <option value={6}>6</option>
+                            <option value={7}>7</option>
+                            <option value={8}>8</option>
+                            <option value={9}>9</option>
+                            <option value={10}>10</option>
+                          </select>
+                          {formErrors.vestingCycle && <small className="text-danger">{formErrors.vestingCycle}</small>}
+                        </div>
+ 
+                        <div className="form-group my-3 col-6">
+                          <label htmlFor="vestingCycle">Vesting cycle</label>
+                          <select
+                            value={formData.vestingCycle}
+                            className="form-control"
+                            id="vestingCycle"
+                            onChange={handleInputChange}
+                          >
+                            <option value="">Select a cycle</option>
+                            <option value="annually">Annually</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="monthly">Monthly</option>
+                          </select>
+                          {formErrors.vestingCycle && <small className="text-danger">{formErrors.vestingCycle}</small>}
+                        </div>
                       </div>
                       <p className='font-weight-bold mt-3'>Recipients</p>
                       <div className="form-group my-3">
-                        <label htmlFor="recipients">Add recipients to each receive the vesting schedule</label>
+                        <label htmlFor="recipient">Add the recipient to receive the vesting schedule</label>
                         <input
                           type="text"
-                          placeholder="Insert or select a wallet" 
                           className="form-control"
-                          id="recipients"
-                          value={formData.recipients}
+                          id="recipient"
+                          value={formData.recipient}
                           onChange={handleInputChange}
                         />
-                        {formErrors.recipients && <small className="text-danger">{formErrors.recipients}</small>}
+                        {formErrors.recipient && <small className="text-danger">{formErrors.recipient}</small>}
   
                       </div>
-                      <div className='wallet-list my-3'>
-                        <ul>
-                          <li>$BobsWallet</li>
-                          <li>$AliceWallet</li>
-                          <li>addr1v94725lv4umktv89cg2t04qjn4qq3p6l6zegvtx5es...</li>
-                        </ul>
+                    <div className='col-12 my-3'>
+                      <hr className='mx-1'/>
+                    </div>
+
+                    <div className='col-12'>
+                      <p className='destination-address-title'>Your wallet address</p>
+                      <div className='container destination-address-container'>
+                        <p className='destination-address'>{changeAddress}</p>
                       </div>
+                    </div>
                     </form>
                   </div>
                 </div>
