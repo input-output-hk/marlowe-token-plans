@@ -1,22 +1,40 @@
-import React from 'react';
-import Payout from '../../models/Payout';
-import Token from '../../models/Token';
+import React, {useState} from 'react';
+import ClaimDetail from '../widgets/ClaimDetail';
+import moment from 'moment';
+import ProgressMeter from '../widgets/ProgressMeter';
 
 interface ClaimModalProps {
   showModal: boolean;
   closeModal: () => void;
-  // payoutsToBePaidIds: string[];
-  // payouts: Payout[];
-  // destinationAddress: string;
-  // handleWithdrawals: () => void;
+  changeAddress: string;
 }
 
-const extractAmount = () => {
-  // return payout.tokens.map((token: Token) => token.amount).reduce((a, b) => a + b, 0n).toString();
-};
+const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal, changeAddress }) => {
 
-const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal }) => {
-  // const payoutsToBePaid = payouts.filter(payout => payoutsToBePaidIds.includes(payout.payoutId));
+  const claim = {
+    name: 'ID 1',
+    startDate: moment().format('YYYY-MM-DD'),
+    endDate: moment().add(1, 'years').format('YYYY-MM-DD'),
+    nextVestDate: moment().add(1, 'months').format('YYYY-MM-DD'),
+    totalShares: '1000',
+    vestedShares: '100',
+    claimedShares: '0',
+  }
+  const [sharesLeft, setSharesLeft] = useState(Number(claim.vestedShares))
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
+
+  const handleSharesLeft = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    const sharesLeftValue = Number(claim.vestedShares) - Number(value);
+    setSharesLeft(sharesLeftValue);
+
+    // Set validation message based on sharesLeftValue
+    if (sharesLeftValue < 0) {
+      setValidationMessage("Not enough shares to claim, please select a different amount");
+    } else {
+      setValidationMessage(null);
+    }
+  }
 
   return (
     <>
@@ -27,7 +45,7 @@ const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal }) => {
               <div className='container'>
                 <div className='row'>
                   <div className='col-10 text-left'>
-                    <h5 className="modal-title">CLAIM</h5>
+                    <h5 className="modal-title">Claim shares</h5>
                   </div>
                   <div className='col-2 text-right'>
                     <button type="button" className="close btn btn-outline-secondary" onClick={closeModal}>
@@ -41,17 +59,28 @@ const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal }) => {
               <div className='container'>
                 <div className='row'>
                   <div className='col-12'>
-                    <div className='container outer-modal-body'>
-                      <p className='font-weight-bold'>Reward name</p>
-                      <div className='container inner-modal-body'>
-                        <ul>
-                          {/* {payoutsToBePaid.map((payout, index) => (
-                            <li key={index}>{payout.payoutId}: {extractAmount(payout)} lovelace</li>
-                          ))} */}
-                        </ul>
-                      </div>
-                    </div>
+                    <ClaimDetail imgSrc="images/fingerprint.svg" altText="Name" label="Name" value={claim.name} />
+                    <ClaimDetail imgSrc="images/event_available.svg" altText="Start date" label="Start date" value={claim.startDate}/>
+                    <ClaimDetail imgSrc="images/event_busy.svg" altText="End date" label="End date" value={claim.endDate}/>
+                    <ClaimDetail imgSrc="images/cycle.svg" altText="Next vest date" label="Next vest date" value={claim.nextVestDate}/>
+                    <ClaimDetail imgSrc="images/forest.svg" altText="Total shares" label="Total shares" value={claim.totalShares}/>
+                    <ClaimDetail imgSrc="images/nature.svg" altText="Vested shares" label="Vested shares" value={claim.vestedShares}/>
+                    <ClaimDetail imgSrc="images/check_circle.svg" altText="Claimed shares" label="Claimed shares" value={claim.claimedShares}/>
                   </div>
+                  <div className='col-12 my-3'>
+                    <ProgressMeter percentage={Number(claim.vestedShares) / Number(claim.totalShares) * 100} classNames="progress-bar" />
+                    <hr className='mx-1'/>
+                  </div>
+
+                  <div className='col-12 position-relative'>
+                    <label htmlFor="amountToClaim" className="form-label">Enter number of shares to claim</label>
+                    <input type="number" onChange={handleSharesLeft} className="form-control shadow text-color-primary font-weight-bold" max={claim.vestedShares} min={1} />
+                    <span className="position-absolute end-0 top-50 translate-middle-y font-weight-bold" style={{ paddingRight: '20px', paddingTop: '30px' }}>
+                      {sharesLeft} left
+                    </span>
+                    {validationMessage && <small className="text-danger mt-2 d-block">{validationMessage}</small>}
+                  </div>
+
                   <div className='col-12 my-3'>
                     <hr className='mx-1'/>
                     <p className='transfer-title'>
@@ -63,7 +92,7 @@ const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal }) => {
                   <div className='col-12'>
                     <p className='destination-address-title'>Your wallet address</p>
                     <div className='container destination-address-container'>
-                      {/* <p className='destination-address'>{destinationAddress}</p> */}
+                      <p className='destination-address'>{changeAddress}</p>
                     </div>
                   </div>
                 </div>
@@ -78,9 +107,9 @@ const ClaimsModal: React.FC<ClaimModalProps> = ({ showModal, closeModal }) => {
                     </button>
                   </div>
                   <div className='col'>
-                    {/* <button type="button" className="btn btn-primary w-100" onClick={handleWithdrawals}>
+                    <button type="button" className="btn btn-primary w-100" onClick={closeModal}>
                       Confirm
-                    </button> */}
+                    </button>
                   </div>
                 </div>
               </div>

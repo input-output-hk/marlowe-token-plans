@@ -1,19 +1,33 @@
 import React, { useState } from 'react';
+import DatePicker from "react-datepicker";
+import moment from 'moment';
 import './modal.scss';
+import "react-datepicker/dist/react-datepicker.css";
 
-interface NewVestingScheduleModalProps {
+interface CancelVestingScheduleModalProps {
   showModal: boolean;
   closeModal: () => void;
+  changeAddress: string;
 }
 
-const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showModal, closeModal }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    numberOfShares: '',
-    startDate: '',
-    endDate: '',
-    vestingCycle: '',
-    recipients: [],
+const CancelVestingScheduleModal: React.FC<CancelVestingScheduleModalProps> = ({ showModal, closeModal, changeAddress}) => {
+
+  type FormData = {
+    name: string;
+    numberOfShares: string;
+    startDate: Date;
+    endDate: Date;
+    vestingCycle: string;
+    recipient: string;
+  };
+
+  const [formData, setFormData] = useState<FormData>({
+    name: 'Larry Adames',
+    numberOfShares: '500',
+    startDate: moment().toDate(),
+    endDate: moment().add(1, 'years').toDate(),
+    vestingCycle: 'monthly',
+    recipient: 'addr_test1qzwkrkgyxq0u9vkrz7zjvgglz9g7fpgcf4fhqnmk2uevdauvysp6aeeun6uy6kng2sva4kke23m4mdwevkc5h6ggsgqqtvv4c8',
   });
 
   const [formErrors, setFormErrors] = useState({
@@ -22,7 +36,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     startDate: null,
     endDate: null,
     vestingCycle: null,
-    recipients: null,
+    recipient: null,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -30,6 +44,13 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     setFormData({
       ...formData,
       [id]: value,
+    });
+  };
+
+  const handleDateInputChange = (date: Date | null, id: string) => {
+    setFormData({
+      ...formData,
+      [id]: date,
     });
   };
 
@@ -41,7 +62,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
       startDate: null,
       endDate: null,
       vestingCycle: null,
-      recipients: null,
+      recipient: null,
     };
 
     for (const [key, value] of Object.entries(formData)) {
@@ -63,10 +84,10 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     setFormData({
       name: '',
       numberOfShares: '',
-      startDate: '',
-      endDate: '',
+      startDate: new Date,
+      endDate: new Date,
       vestingCycle: '',
-      recipients: [],
+      recipient: '',
     });
     setFormErrors({
       name: null,
@@ -74,7 +95,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
       startDate: null,
       endDate: null,
       vestingCycle: null,
-      recipients: null,
+      recipient: null,
     });
     closeModal();
   }
@@ -89,7 +110,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
               <div className='container'>
                 <div className='row'>
                   <div className='col-10 text-left'>
-                    <h5 className="modal-title">Make Deposit</h5>
+                    <h5 className="modal-title">Cancel vesting schedule</h5>
                   </div>
                   <div className='col-2 text-right'>
                     <button type="button" className="close btn btn-outline-secondary" onClick={handleClose}>
@@ -110,84 +131,100 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
                         <input
                           type="text"
                           className="form-control"
+                          disabled={true}
                           id="name"
                           value={formData.name}
                           onChange={handleInputChange}
                         />
                         {formErrors.name && <small className="text-danger">{formErrors.name}</small>}
                       </div>
-                      <div className="form-group my-3">
-                        <label htmlFor="numberOfShares">Enter value of shares for each recipient</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="numberOfShares"
-                          value={formData.numberOfShares}
-                          onChange={handleInputChange}
-                        />
-                        {formErrors.numberOfShares && <small className="text-danger">{formErrors.numberOfShares}</small>}
+                      <div className='row'>
+                        <div className="form-group my-3 col-6">
+                          <label htmlFor="numberOfShares">Enter value of shares for each recipient</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            disabled={true}
+                            id="numberOfShares"
+                            value={formData.numberOfShares}
+                            onChange={handleInputChange}
+                          />
+                          {formErrors.numberOfShares && <small className="text-danger">{formErrors.numberOfShares}</small>}
+                        </div>
                       </div>
+                      <p className='font-weight-bold mt-5'>Schedule</p>
+                      <div className='row'>
+                        <div className="form-group mb-3 col-6">
+                          <div className='row'>
+                            <label htmlFor="startDate">Start date</label>
+                          </div>
+                          <DatePicker
+                            selected={formData.startDate}
+                            onChange={(date) => handleDateInputChange(date, 'startDate')}
+                            disabled={true}
+                            minDate={new Date}
+                            className='form-control'
+                            wrapperClassName='col-12'
+                            showIcon={true}
+                          />
+                          {formErrors.startDate && <small className="text-danger">{formErrors.startDate}</small>}
+                        </div>
+                        <div className="form-group mb-3 col-6">
+                          <div className='row'>
+                            <label htmlFor="endDate">End date</label>
+                          </div>
+                          <DatePicker
+                            selected={formData.endDate}
+                            onChange={(date) => handleDateInputChange(date, 'endDate')}
+                            disabled={true}
+                            minDate={new Date}
+                            className='form-control'
+                            wrapperClassName='col-12'
+                            showIcon={true}
+                          />
+                          {formErrors.endDate && <small className="text-danger">{formErrors.endDate}</small>}
+                        </div>
 
-                      <p className='font-weight-bold mt-3'>Schedule</p>
-                      <div className="form-group my-3">
-                        <label htmlFor="startDate">Start date</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="startDate"
-                          value={formData.startDate}
-                          onChange={handleInputChange}
-                        />
-                        {formErrors.startDate && <small className="text-danger">{formErrors.startDate}</small>}
-                      </div>
-                      <div className="form-group my-3">
-                        <label htmlFor="endDate">End date</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="endDate"
-                          value={formData.endDate}
-                          onChange={handleInputChange}
-                        />
-                        {formErrors.endDate && <small className="text-danger">{formErrors.endDate}</small>}
-                      </div>
-
-                      <div className="form-group my-3">
-                        <label htmlFor="vestingCycle">Vesting cycle</label>
-                        <select
-                          value={formData.vestingCycle}
-                          className="form-control"
-                          id="vestingCycle"
-                          onChange={handleInputChange}
-                        >
-                          <option value="">Select a cycle</option>
-                          <option value="annually">Annually</option>
-                          <option value="monthly">monthly</option>
-                          {/* Add your options here */}
-                        </select>
-                        {formErrors.vestingCycle && <small className="text-danger">{formErrors.vestingCycle}</small>}
+                        <div className="form-group my-3 col-6">
+                          <label htmlFor="vestingCycle">Vesting cycle</label>
+                          <select
+                            value={formData.vestingCycle}
+                            className="form-control"
+                            disabled={true}
+                            id="vestingCycle"
+                            onChange={handleInputChange}
+                          >
+                            <option value="">Select a cycle</option>
+                            <option value="annually">Annually</option>
+                            <option value="monthly">Monthly</option>
+                          </select>
+                          {formErrors.vestingCycle && <small className="text-danger">{formErrors.vestingCycle}</small>}
+                        </div>
                       </div>
                       <p className='font-weight-bold mt-3'>Recipients</p>
                       <div className="form-group my-3">
-                        <label htmlFor="recipients">Add recipients to each receive the vesting schedule</label>
+                        <label htmlFor="recipient">Add the recipient to receive the vesting schedule</label>
                         <input
                           type="text"
-                          placeholder="Insert or select a wallet" 
                           className="form-control"
-                          id="recipients"
-                          value={formData.recipients}
+                          disabled={true}
+                          id="recipient"
+                          value={formData.recipient}
                           onChange={handleInputChange}
                         />
-                        {formErrors.recipients && <small className="text-danger">{formErrors.recipients}</small>}
+                        {formErrors.recipient && <small className="text-danger">{formErrors.recipient}</small>}
   
                       </div>
-                      <div className='wallet-list my-3'>
-                        <ul>
-                          <li>$BobsWallet</li>
-                          <li>$AliceWallet</li>
-                          <li>addr1v94725lv4umktv89cg2t04qjn4qq3p6l6zegvtx5es...</li>
-                        </ul>
+                    <div className='col-12 my-3'>
+                      <hr className='mx-1'/>
+                    </div>
+
+                    <div className='col-12'>
+                      <p className='destination-address-title'>Your wallet address</p>
+                      <div className='container destination-address-container'>
+                        <p className='destination-address'>{changeAddress}</p>
                       </div>
+                    </div>
                     </form>
                   </div>
                 </div>
@@ -196,14 +233,9 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
             <div className="modal-footer">
               <div className='container'>
                 <div className='row'>
-                  <div className='col'>
-                    <button type="button" className="btn btn-outline-secondary w-100" onClick={handleClose}>
-                      Cancel
-                    </button>
-                  </div>
-                  <div className='col'>
-                    <button type="button" className="btn btn-primary w-100" onClick={handleSubmit}>
-                      Create schedule
+                  <div className='col text-right'>
+                    <button type="button" className="btn btn-danger text-color-white font-weight-bold" onClick={handleSubmit}>
+                      Cancel schedule
                     </button>
                   </div>
                 </div>
@@ -217,4 +249,4 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
   );
 };
 
-export default NewVestingScheduleModal;
+export default CancelVestingScheduleModal;
