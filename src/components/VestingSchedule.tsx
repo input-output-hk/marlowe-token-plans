@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import MarloweSDK from '../services/MarloweSDK';
 import { useNavigate } from 'react-router-dom';
 import { Browser } from "@marlowe.io/runtime-lifecycle"
 import { RuntimeLifecycle } from "@marlowe.io/runtime-lifecycle/dist/apis/runtimeLifecycle"
@@ -11,32 +12,38 @@ import moment from 'moment';
 import Status from '../models/Status';
 import NewVestingScheduleModal from './modals/NewVestingScheduleModal';
 import DepositVestingScheduleModal from './modals/DepositVestingScheduleModal';
-import EditVestingScheduleModal from './modals/EditVestingScheduleModal';
+import CancelVestingScheduleModal from './modals/CancelVestingScheduleModal';
 import ClaimsModal from './modals/ClaimsModal';
 
 const runtimeURL = `${process.env.MARLOWE_RUNTIME_WEB_URL}`;
 
 type VestingScheduleProps = {
+  sdk: MarloweSDK,
   setAndShowToast: (title:string, message:any, isDanger: boolean) => void
 };
 
 enum VestingScheduleModal {
   NEW = 'new',
-  EDIT = 'edit',
+  CANCEL = 'cancel',
   CLAIM = 'claim',
   DEPOSIT = 'deposit',
 }
 
-const VestingSchedule: React.FC<VestingScheduleProps> = ({setAndShowToast}) => {
+const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast}) => {
   const navigate = useNavigate();
   const selectedAWalletExtension = localStorage.getItem('walletProvider');
   if (!selectedAWalletExtension) { navigate('/'); }
-  const [sdk, setSdk] = useState<RuntimeLifecycle>();
+
+  // TODO: Flip these two lines once we're ready to use the SDK
+  const sdkContracts = sdk.getContracts();
+  // const [sdk, setSdk] = useState<RuntimeLifecycle>();
+  const [contracts, setContracts] = useState<any[]>(sdkContracts);
+  // const [contracts, setContracts] = useState<any[]>([]);
+
   const [changeAddress, setChangeAddress] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false);
 
   const truncatedAddress = changeAddress.slice(0,18);
-  const [contracts, setContracts] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showNewVestingScheduleModal, setShowNewVestingScheduleModal] = useState(false);
   const [showEditVestingScheduleModal, setShowEditVestingScheduleModal] = useState(false);
@@ -50,7 +57,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({setAndShowToast}) => {
       case VestingScheduleModal.DEPOSIT:
         setShowDepositVestingScheduleModal(true);
         break;
-      case VestingScheduleModal.EDIT:
+      case VestingScheduleModal.CANCEL:
         setShowEditVestingScheduleModal(true);
         break;
       default:
@@ -63,7 +70,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({setAndShowToast}) => {
     if (!selectedAWalletExtension) { navigate('/'); }
     else {
       const runtimeLifecycle = await Browser.mkRuntimeLifecycle(runtimeURL)(selectedAWalletExtension)()
-      setSdk(runtimeLifecycle)
+      // setSdk(runtimeLifecycle)
       const newChangeAddress = await runtimeLifecycle.wallet.getChangeAddress()
       setChangeAddress(unAddressBech32(newChangeAddress))
       await pipe(runtimeLifecycle.payouts.available(O.none)
@@ -111,7 +118,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({setAndShowToast}) => {
       case VestingScheduleModal.DEPOSIT:
         setShowDepositVestingScheduleModal(false);
         break;
-      case VestingScheduleModal.EDIT:
+      case VestingScheduleModal.CANCEL:
         setShowEditVestingScheduleModal(false);
         break;
       default:
@@ -169,7 +176,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({setAndShowToast}) => {
       case Status.IN_PROGRESS:
         if (isManager(contract)) {
           return (
-            <button className='btn btn-outline-danger font-weight-bold' onClick={() => openModal(VestingScheduleModal.EDIT)}>
+            <button className='btn btn-outline-danger font-weight-bold' onClick={() => openModal(VestingScheduleModal.CANCEL)}>
               Cancel
             </button>
           );
@@ -295,7 +302,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({setAndShowToast}) => {
       </div>
       <NewVestingScheduleModal showModal={showNewVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.NEW) } changeAddress={changeAddress} />
       <DepositVestingScheduleModal showModal={showDepositVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.DEPOSIT)}  />
-      <EditVestingScheduleModal showModal={showEditVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.EDIT)}  />
+      <CancelVestingScheduleModal showModal={showEditVestingScheduleModal} closeModal={() => closeModal(VestingScheduleModal.CANCEL)} changeAddress={changeAddress}  />
       <ClaimsModal showModal={showModal} closeModal={() => closeModal(VestingScheduleModal.CLAIM)}  />
     </div>
   );
