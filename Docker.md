@@ -1,7 +1,7 @@
 # Docker Image
 
 
-Use the following Nix command to build the Docker image for Marlowe Payouts.
+Use the following Nix command to build the Docker image for Marlowe Vesting.
 ```bash
 nix build .#oci-images.x86_64-linux.marlowe-vesting
 ```

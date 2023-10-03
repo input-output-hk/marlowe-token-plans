@@ -1,28 +1,28 @@
-# This file is part of the IOGX template and is documented at the link below:
-# https://www.github.com/input-output-hk/iogx#34-nixshellnix
+{ repoRoot, inputs, pkgs, lib, system }:
 
-{ iogxRepoRoot, repoRoot, inputs, inputs', pkgs, system, lib, project ? null, ... }:
+lib.iogx.mkShell {
 
-let
+  welcomeMessage = "Marlowe Vesting dApp";
 
-  nodejs = pkgs.nodejs-18_x;
-  skopeo = inputs'.n2c.packages.skopeo-nix2container;
-  docker = pkgs.docker;
-
-in
-
-{
-  # name = "nix-shell";
-  # prompt = "$ ";
-  welcomeMessage = "Marlowe vesting dapp";
   packages = [
-    nodejs
-    skopeo
-    docker
+    pkgs.nodejs
+    pkgs.docker
+    inputs.n2c.packages.skopeo-nix2container
   ];
-  # scripts = { };
-  # env = { };
-  enterShell = ''
+
+  shellHook = ''
     export PATH="$PATH:./node_modules/.bin/:./bin"
   '';
+
+  # scripts = { };
+  # env = { };
+  # name = "nix-shell";
+  # prompt = "$ ";
+
+  preCommit = {
+    shellcheck.enable = true;
+    shellcheck.extraOptions = "";
+    nixpkgs-fmt.enable = true;
+    nixpkgs-fmt.extraOptions = "";
+  };
 }
