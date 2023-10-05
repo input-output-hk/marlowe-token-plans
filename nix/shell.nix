@@ -5,24 +5,13 @@ lib.iogx.mkShell {
   welcomeMessage = "Marlowe Vesting dApp";
 
   packages = [
-    pkgs.nodejs
-    pkgs.docker
-    inputs.n2c.packages.skopeo-nix2container
+    pkgs.nodejs-18_x
+    pkgs.nodejs-18_x.pkgs.webpack
+    pkgs.nodejs-18_x.pkgs.webpack-cli
   ];
-
-  shellHook = ''
-    export PATH="$PATH:./node_modules/.bin/:./bin"
-  '';
-
-  # scripts = { };
-  # env = { };
-  # name = "nix-shell";
-  # prompt = "$ ";
 
   preCommit = {
     shellcheck.enable = true;
-    shellcheck.extraOptions = "";
     nixpkgs-fmt.enable = true;
-    nixpkgs-fmt.extraOptions = "";
   };
 }

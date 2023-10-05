@@ -7,11 +7,13 @@ let
 in
 
 npmlock2nix.v2.build {
+
   nodejs = pkgs.nodejs-18_x;
 
   src = lib.sourceByRegex ../. [
     "^src.*"
     "^public.*"
+    "^contract.*"
     "^.env$"
     "^package-lock.json$"
     "^package.json$"
