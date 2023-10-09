@@ -28,7 +28,7 @@ jobs:
 
       - name: Build Marlowe Vesting (with Nix)
         run: |
-          nix build .#marlowe-vesting
+          nix build .#marlowe-vesting -L
 
       - name: Build Marlowe Vesting (inside nix develop)
         run: |
