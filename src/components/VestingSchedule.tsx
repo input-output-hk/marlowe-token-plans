@@ -76,7 +76,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
       // setSdk(runtimeLifecycle)
       const newChangeAddress = await runtimeLifecycle.wallet.getChangeAddress()
       setChangeAddress(unAddressBech32(newChangeAddress))
-      await pipe(runtimeLifecycle.payouts.available(O.none) // TODO payouts -> vesting?
+      await pipe(runtimeLifecycle.payouts.available(O.none)
         , TE.match(
           (err) => {
             console.log("Error", err);
@@ -91,7 +91,7 @@ const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast})
             );
           },
           a => true))()
-      await pipe(runtimeLifecycle.payouts.withdrawn(O.none) // TODO payouts -> vesting?
+      await pipe(runtimeLifecycle.payouts.withdrawn(O.none)
         , TE.match(
           (err) => {
             console.log("Error", err);
