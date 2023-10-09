@@ -1,13 +1,8 @@
 {
-  description = "Marlowe Vesting dApp";
+  description = "Marlowe vesting dapp";
 
   inputs = {
     iogx.url = "github:input-output-hk/iogx?ref=v4";
-
-    npmlock2nix = {
-      url = "github:nix-community/npmlock2nix";
-      flake = false;
-    };
   };
 
 
