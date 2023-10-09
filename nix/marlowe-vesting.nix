@@ -33,7 +33,7 @@ pkgs.buildNpmPackage {
   buildPhase = ''
     mkdir -p $out
     npm run build
-    cp -r dist/* $out
+    cp -r {dist,public}/* $out
   '';
 
   dontNpmBuild = true;
