@@ -212,8 +212,6 @@ services:
 
   marlowe-vesting:
     image: ghrc.io/input-output-hk/marlowe-vesting:latest
-    environment:
-    - MARLOWE_RT_WEBSERVER_URL=${MARLOWE_RT_WEBSERVER_URL:?err}
     depends_on:
       - web-server
     ports:
