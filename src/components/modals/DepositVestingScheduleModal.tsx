@@ -162,7 +162,12 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
                         >
                           <option value="">Select a cycle</option>
                           <option value="annually">Annually</option>
+                          <option value="half-yearly">half-yearly</option>
+                          <option value="quaterly">quaterly</option>
                           <option value="monthly">monthly</option>
+                          <option value="weekly">weekly</option>
+                          <option value="daily">daily</option>
+                          <option value="hourly">hourly</option>
                           {/* Add your options here */}
                         </select>
                         {formErrors.vestingCycle && <small className="text-danger">{formErrors.vestingCycle}</small>}

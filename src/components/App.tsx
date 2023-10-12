@@ -1,14 +1,13 @@
 // App.tsx
 import React, {useState} from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Landing from './Landing';
-import VestingSchedule from './VestingSchedule';
+import VestingSchedule from './vesting/Employer';
 import ToastMessage from './ToastMessage';
-import MarloweSDK from '../services/MarloweSDK';
 
 
 const App: React.FC = () => {
-  const [sdk, setSdk] = useState(new MarloweSDK());
+  const hasSelectedAWalletExtension = localStorage.getItem('walletProvider');
   const [toasts, setToasts] = useState<any[]>([]);
 
   const setAndShowToast = (title: string, message: React.ReactNode) => {
@@ -23,8 +22,8 @@ const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Landing sdk={sdk} setAndShowToast={setAndShowToast} />} />
-        <Route path="/vesting-schedules" element={<VestingSchedule sdk={sdk} setAndShowToast={setAndShowToast} />} />
+        <Route path="/" element={hasSelectedAWalletExtension ? <Navigate to="/employer" /> : <Landing setAndShowToast={setAndShowToast} />} />
+        <Route path="/employer" element={hasSelectedAWalletExtension ? <VestingSchedule setAndShowToast={setAndShowToast} /> : <Navigate to="/" />} />
       </Routes>
     <div className="toast-container position-fixed bottom-0 end-0 p-3">
       {toasts.map(toast => (

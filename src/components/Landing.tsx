@@ -1,48 +1,26 @@
-import React, { useEffect } from 'react';
+import { getAvailableWallets } from '@marlowe.io/wallet/browser';
+import React, { } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MarloweSDK from '../services/MarloweSDK';
 
-// declare global {
-//   interface Window {
-//     cardano: any;
-//   }
-// }
 
 type LandingProps = {
-  sdk: MarloweSDK;
   setAndShowToast: (title: string, message: any, isDanger: boolean) => void
 };
 
-const Landing: React.FC<LandingProps> = ({ sdk, setAndShowToast }) => {
+const Landing: React.FC<LandingProps> = ({ setAndShowToast }) => {
   const navigate = useNavigate();
   const selectedAWalletExtension = localStorage.getItem('walletProvider');
-  const validWalletExtentions = ['nami', 'eternl'];
-  if (selectedAWalletExtension) { navigate('/vesting-schedules') }
-
-  useEffect(() => {
-    const walletProvider = localStorage.getItem('walletProvider');
-    if (walletProvider) {
-      try {
-        (async () => {
-          await sdk.connectWallet(walletProvider);
-          navigate('/vesting-schedules');
-        })();
-      } catch (e) {
-        console.log("USE EFFECT ON LANDNING PAGE FAILED: ", e)
-        localStorage.setItem('walletProvider', '');
-      }
-    }
-  }, [sdk, navigate]);
+  const validWalletExtentions = getAvailableWallets()
+  if (selectedAWalletExtension) { navigate('/employer') }
 
   async function connectWallet(walletName: string) {
     localStorage.setItem('walletProvider', walletName);
-    const selectedAWalletExtension = localStorage.getItem('walletProvider');
     setAndShowToast(
       `Sucessfully connected ${walletName} wallet`,
-      <span className='text-color-white'>You can now see a list of available vesting schedules for your {walletName} wallet!</span>,
+      <span className='text-color-white'>You can now see a list of available payouts for your {walletName} wallet!</span>,
       false
     );
-    navigate('/vesting-schedules');
+    navigate('/employer');
   }
 
   function capitalizeFirstLetter(str: string): string {
@@ -79,7 +57,7 @@ const Landing: React.FC<LandingProps> = ({ sdk, setAndShowToast }) => {
           <img src="/images/marlowe-logo-primary.svg" alt="Logo" className="mb-4" id="marlowe-logo" />
         </div>
         <div className="row">
-          <p className="title">Vesting Schedule prototype</p>
+          <p className="title">Reward withdrawals prototype</p>
         </div>
         <div className="row justify-content-center mt-4">
           <div className="col-12 ">
