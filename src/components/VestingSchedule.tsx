@@ -16,11 +16,10 @@ import CancelVestingScheduleModal from './modals/CancelVestingScheduleModal';
 import ClaimsModal from './modals/ClaimsModal';
 import ProgressMeter from './widgets/ProgressMeter';
 
-const runtimeURL = `${process.env.MARLOWE_RUNTIME_WEB_URL}`;
-
 type VestingScheduleProps = {
   sdk: MarloweSDK,
-  setAndShowToast: (title:string, message:any, isDanger: boolean) => void
+  setAndShowToast: (title:string, message:any, isDanger: boolean) => void,
+  runtimeURL: string
 };
 
 enum VestingScheduleModal {
@@ -30,7 +29,7 @@ enum VestingScheduleModal {
   DEPOSIT = 'deposit',
 }
 
-const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast}) => {
+const VestingSchedule: React.FC<VestingScheduleProps> = ({sdk, setAndShowToast, runtimeURL}) => {
   const navigate = useNavigate();
   const selectedAWalletExtension = localStorage.getItem('walletProvider');
   if (!selectedAWalletExtension) { navigate('/'); }

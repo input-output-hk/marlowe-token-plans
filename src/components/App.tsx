@@ -7,7 +7,11 @@ import ToastMessage from './ToastMessage';
 import MarloweSDK from '../services/MarloweSDK';
 
 
-const App: React.FC = () => {
+type AppProps = {
+  runtimeURL: string;
+}
+
+const App: React.FC<AppProps> = ({runtimeURL}) => {
   const [sdk, setSdk] = useState(new MarloweSDK());
   const [toasts, setToasts] = useState<any[]>([]);
 
@@ -24,7 +28,7 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Landing sdk={sdk} setAndShowToast={setAndShowToast} />} />
-        <Route path="/vesting-schedules" element={<VestingSchedule sdk={sdk} setAndShowToast={setAndShowToast} />} />
+        <Route path="/vesting-schedules" element={<VestingSchedule sdk={sdk} setAndShowToast={setAndShowToast} runtimeURL={runtimeURL} />} />
       </Routes>
     <div className="toast-container position-fixed bottom-0 end-0 p-3">
       {toasts.map(toast => (
