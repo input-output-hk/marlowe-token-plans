@@ -8,7 +8,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './styles/main.scss';
 
 import { mkRestClient } from "@marlowe.io/runtime-rest-client";
-
+const dAppId = `${process.env.DAPP_ID}`;
 let runtimeURL = process.env.MARLOWE_RUNTIME_WEB_URL;
 await fetch('/config.json').then(async (res) => {
   if (res.status === 200) {
@@ -23,7 +23,7 @@ if (runtimeURL === undefined || runtimeURL === null) {
   alert("Missing valid config.json file with marloweWebServerUrl OR env keys are not set!")
 } else {
   const restClient = mkRestClient(runtimeURL)
-  const hasValidRuntimeInstance = await restClient.healthcheck()()
+  const hasValidRuntimeInstance = await restClient.healthcheck()
 
   if (!hasValidRuntimeInstance) {
     alert("Invalid runtime instance set!")
@@ -39,6 +39,6 @@ if (runtimeURL === undefined || runtimeURL === null) {
     const root = ReactDOM.createRoot(el);
 
     // 4) Show the component on the screen
-    root.render(<App runtimeURL={runtimeURL} />);
+    root.render(<App runtimeURL={runtimeURL} dAppId={dAppId} />);
   }
 }
