@@ -1,18 +1,21 @@
 // App.tsx
 import React, {useState} from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Landing from './Landing';
-import VestingSchedule from './VestingSchedule';
-import ToastMessage from './ToastMessage';
-import MarloweSDK from '../services/MarloweSDK';
 
+import ToastMessage from './ToastMessage';
+import About from './vesting/About';
+import YourTokenPlans from './vesting/YourPlans';
+import CreatePlans from './vesting/CreatedPlans';
 
 type AppProps = {
   runtimeURL: string;
+  dAppId : string
 }
 
-const App: React.FC<AppProps> = ({runtimeURL}) => {
-  const [sdk, setSdk] = useState(new MarloweSDK());
+const App: React.FC<AppProps> = ({runtimeURL,dAppId}) => {
+  const hasSelectedAWalletExtension = localStorage.getItem('walletProvider');
+
   const [toasts, setToasts] = useState<any[]>([]);
 
   const setAndShowToast = (title: string, message: React.ReactNode) => {
@@ -27,8 +30,10 @@ const App: React.FC<AppProps> = ({runtimeURL}) => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Landing sdk={sdk} setAndShowToast={setAndShowToast} />} />
-        <Route path="/vesting-schedules" element={<VestingSchedule sdk={sdk} setAndShowToast={setAndShowToast} runtimeURL={runtimeURL} />} />
+        <Route path="/" element={hasSelectedAWalletExtension ? <Navigate to="/created-plans" /> : <Landing setAndShowToast={setAndShowToast} />} />
+        <Route path="/your-plans" element={hasSelectedAWalletExtension ? <YourTokenPlans runtimeURL={runtimeURL} dAppId={dAppId} setAndShowToast={setAndShowToast} /> : <Navigate to="/" />} />
+        <Route path="/created-plans" element={hasSelectedAWalletExtension ? <CreatePlans runtimeURL={runtimeURL} dAppId={dAppId} setAndShowToast={setAndShowToast} /> : <Navigate to="/" />} />
+        <Route path="/about" element={hasSelectedAWalletExtension ? <About setAndShowToast={setAndShowToast} /> : <Navigate to="/" />} />
       </Routes>
     <div className="toast-container position-fixed bottom-0 end-0 p-3">
       {toasts.map(toast => (
