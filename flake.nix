@@ -2,7 +2,7 @@
   description = "Marlowe vesting dapp";
 
   inputs = {
-    iogx.url = "github:input-output-hk/iogx?ref=v4";
+    iogx.url = "github:input-output-hk/iogx";
   };
 
 
