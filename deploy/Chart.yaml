@@ -1,0 +1,7 @@
+apiVersion: v2
+name: marlowe-vesting
+version: v1.0.0
+description: Marlowe Vesting prototype
+home: https://github.com/input-output-hk/marlowe-vesting
+sources:
+  - https://github.com/input-output-hk/marlowe-vesting

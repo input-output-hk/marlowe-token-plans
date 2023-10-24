@@ -1,0 +1,152 @@
+{{- range $index, $network := .Values.networks }}
+---
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: marlowe-vesting-{{ $network }}
+  namespace: marlowe-production
+spec:
+  components:
+    - name: marlowe-vesting-{{ $network }}
+      properties:
+        image: p3terx/darkhttpd
+        args:
+          - /client-www
+          - --port
+          - "8080"
+        imagePullPolicy: Always
+        ports:
+          - expose: true
+            port: 8080
+            protocol: TCP
+      traits:
+        - properties:
+            replicas: 1
+          type: scaler
+        - properties:
+            domains:
+              - vesting-{{ $network }}.prod.scdev.aws.iohkdev.io
+            rules:
+              - port: 8080
+          type: https-route
+        - type: init-container
+          properties:
+            name: load-vesting-client
+            image: ghcr.io/input-output-hk/marlowe-vesting:{{ $.Values.images.productionTag }}
+            args:
+              - -c
+              - |
+                  root="$(dirname $(readlink -f /profile/index.html))"
+                  cp -a $root/* /share/marlowe-vesting/static
+                  cat > /share/marlowe-vesting/static/config.json <<EOF
+                  {
+                    "marloweWebServerUrl": "https://marlowe-runtime-{{ $network }}-web.demo.scdev.aws.iohkdev.io",
+                  }
+                  EOF
+            mountName: client-www
+            initMountPath: /share/marlowe-vesting/static
+            appMountPath: /client-www
+      type: webservice
+  policies:
+    - name: marlowe-vesting-staging
+      properties:
+        clusters:
+          - local
+        namespace: marlowe-staging
+      type: topology
+
+    - name: marlowe-vesting
+      properties:
+        clusters:
+          - local
+        namespace: marlowe-production
+      type: topology
+
+    - name: staging-override
+      type: override
+      properties:
+        components:
+          - name: marlowe-vesting-{{ $network }}
+            properties:
+              image: p3terx/darkhttpd
+              args:
+                - /client-www
+                - --port
+                - "8080"
+              imagePullPolicy: Always
+              ports:
+                - expose: true
+                  port: 8080
+                  protocol: TCP
+            traits:
+              - properties:
+                  replicas: 1
+                type: scaler
+              - properties:
+                  domains:
+                    - vesting-{{ $network }}.scdev.aws.iohkdev.io
+                  rules:
+                    - port: 8080
+                type: https-route
+              - type: init-container
+                properties:
+                  name: load-vesting-client
+                  image: ghcr.io/input-output-hk/marlowe-vesting:{{ $.Values.images.stagingTag }}
+                  args:
+                    - -c
+                    - |
+                        root="$(dirname $(readlink -f /profile/index.html))"
+                        cp -a $root/* /share/marlowe-vesting/static
+                        cat > /share/marlowe-vesting/static/config.json <<EOF
+                        {
+                          "marloweWebServerUrl": "https://marlowe-runtime-{{ $network }}-web.demo.scdev.aws.iohkdev.io",
+                        }
+                        EOF
+                  mountName: client-www
+                  initMountPath: /share/marlowe-vesting/static
+                  appMountPath: /client-www
+            type: webservice
+  workflow:
+    mode:
+      steps: DAG
+    steps:
+      - meta:
+          alias: Push staging image
+        name: push-image-staging
+        type: build-nix-image
+        properties:
+          image: ghcr.io/input-output-hk/marlowe-vesting:{{ $.Values.images.stagingTag }}
+          requests:
+            ephemeralStorage: 25Gi
+          includedFlakeURIs:
+            - "github:input-output-hk/marlowe-vesting?ref={{ $.Values.images.stagingTag }}#marlowe-vesting"
+      - meta:
+          alias: Push image
+        name: push-image
+        type: build-nix-image
+        properties:
+          image: ghcr.io/input-output-hk/marlowe-vesting:{{ $.Values.images.productionTag }}
+          requests:
+            ephemeralStorage: 25Gi
+          includedFlakeURIs:
+            - "github:input-output-hk/marlowe-vesting?ref={{ $.Values.images.productionTag }}#marlowe-vesting"
+      - type: deploy
+        meta:
+          alias: Deploy marlowe-vesting
+        dependsOn:
+          - push-image
+        name: marlowe-vesting
+        properties:
+          policies:
+            - marlowe-vesting
+      - type: deploy
+        meta:
+          alias: Deploy marlowe-vesting to staging
+        dependsOn:
+          - push-image-staging
+        name: marlowe-vesting-staging
+        properties:
+          policies:
+            - marlowe-vesting-staging
+            - staging-override
+{{- end }}

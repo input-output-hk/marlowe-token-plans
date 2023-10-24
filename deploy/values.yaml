@@ -1,0 +1,8 @@
+---
+networks:
+  - preprod
+  - preview
+  - mainnet
+images:
+  stagingTag: "13860ea"
+  productionTag: "13860ea"
