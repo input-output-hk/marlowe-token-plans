@@ -25,7 +25,7 @@ type FormData = {
   claimerAddress: string;
 };
 
-const initialFormData : FormData = {
+const initialFormData : () => FormData = () => ({
   firstName: '',
   lastName: '',
   title : '',
@@ -34,7 +34,7 @@ const initialFormData : FormData = {
   numberOfPeriods: 2,
   frequency: "by-10-minutes",
   claimerAddress: '',
-}
+})
 
 const formErrorsInitialState = {
   firstName: null,
@@ -50,10 +50,10 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
 
   let [loading, setLoading] = useState(false);
   
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [formData, setFormData] = useState<FormData>(initialFormData());
   
   const [formErrors, setFormErrors] = useState(formErrorsInitialState);
-
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setFormData({
@@ -105,7 +105,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
   };
 
   const handleClose = () => {
-    setFormData(initialFormData);
+    setFormData(initialFormData());
     setLoading(false)
     setFormErrors(formErrorsInitialState);
     closeModal();
