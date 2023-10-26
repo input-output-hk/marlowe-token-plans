@@ -75,7 +75,7 @@ spec:
                 - --port
                 - "8080"
                 - --page-fallback
-                - "./index.html"
+                - "/client-www/index.html"
                 - --log-level
                 - "info"
               imagePullPolicy: Always
