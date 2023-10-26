@@ -53,10 +53,8 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,dAppId,setAndShowTo
         const runtimeLifecycleParameters : BrowserRuntimeLifecycleOptions = { runtimeURL:runtimeURL, walletName:selectedAWalletExtension as SupportedWallet}
         const runtimeLifecycle = await mkRuntimeLifecycle(runtimeLifecycleParameters).then((a) => {setRuntimeLifecycle(a);return a})
         const restClient = mkRestClient(runtimeURL); 
-        await runtimeLifecycle.wallet.getChangeAddress()
-          .then((changeAddress : AddressBech32) => 
-              setChangeAddress(unAddressBech32(changeAddress))
-                 )
+        const changeAddress = await runtimeLifecycle.wallet.getChangeAddress()
+          .then((changeAddress : AddressBech32) => {setChangeAddress(unAddressBech32(changeAddress));return unAddressBech32(changeAddress)})
         
         const contractIdsAndTags : [ContractId,Tags][] = (await restClient.getContracts({ tags: [dAppId] })).headers.map((header) => [header.contractId,header.tags]);
         const contractIdsAndDetails : [ContractId,Tags,ContractDetails] []= await Promise.all(
@@ -66,7 +64,7 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,dAppId,setAndShowTo
               .then((details) => [contractId, tags, details] as [ContractId,Tags,ContractDetails])
           )
         );
-        const allContracts : Contract<Vesting.VestingState>[] = await Promise.all(
+        const allContracts : Contract<Vesting.VestingState>[] = (await Promise.all(
           contractIdsAndDetails.map(([contractId, tags, details]) =>
             Vesting.getVestingState(
               tags[dAppId].scheme,
@@ -80,7 +78,8 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,dAppId,setAndShowTo
                               isSelfAttributed : tags[dAppId].isSelfAttributed === 1,
                               providerId : tags[dAppId].providerId,
                               claimer : {firstName : tags[dAppId].firstName, lastName:tags[dAppId].lastName, id: tags[dAppId].claimerId },
-                              state : state}))))
+                              state : state} as Contract<Vesting.VestingState> )))))
+           .filter(contract => contract.providerId === (changeAddress.slice(0,18)))
 
         setContractsWaitingForDeposit
           (allContracts
