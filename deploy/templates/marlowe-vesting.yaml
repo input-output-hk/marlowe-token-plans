@@ -9,11 +9,16 @@ spec:
   components:
     - name: marlowe-vesting-{{ $network }}
       properties:
-        image: p3terx/darkhttpd
+        image: joseluisq/static-web-server:2
         args:
+          - --root
           - /client-www
           - --port
           - "8080"
+          - --page-fallback
+          - "/client-www/index.html"
+          - --log-level
+          - "info"
         imagePullPolicy: Always
         ports:
           - expose: true
