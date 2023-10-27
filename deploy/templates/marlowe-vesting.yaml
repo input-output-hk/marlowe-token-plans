@@ -120,31 +120,9 @@ spec:
     mode:
       steps: DAG
     steps:
-      - meta:
-          alias: Push staging image
-        name: push-image-staging
-        type: build-nix-image
-        properties:
-          image: ghcr.io/input-output-hk/marlowe-vesting:{{ $.Values.images.stagingTag }}
-          requests:
-            ephemeralStorage: 25Gi
-          includedFlakeURIs:
-            - "github:input-output-hk/marlowe-vesting?ref={{ $.Values.images.stagingTag }}#marlowe-vesting"
-      - meta:
-          alias: Push image
-        name: push-image
-        type: build-nix-image
-        properties:
-          image: ghcr.io/input-output-hk/marlowe-vesting:{{ $.Values.images.productionTag }}
-          requests:
-            ephemeralStorage: 25Gi
-          includedFlakeURIs:
-            - "github:input-output-hk/marlowe-vesting?ref={{ $.Values.images.productionTag }}#marlowe-vesting"
       - type: deploy
         meta:
           alias: Deploy marlowe-vesting
-        dependsOn:
-          - push-image
         name: marlowe-vesting
         properties:
           policies:
@@ -152,8 +130,6 @@ spec:
       - type: deploy
         meta:
           alias: Deploy marlowe-vesting to staging
-        dependsOn:
-          - push-image-staging
         name: marlowe-vesting-staging
         properties:
           policies:
