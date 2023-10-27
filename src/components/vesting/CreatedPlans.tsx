@@ -8,21 +8,23 @@ import NewVestingScheduleModal from '../modals/NewVesting';
 import { BrowserRuntimeLifecycleOptions, mkRuntimeLifecycle } from "@marlowe.io/runtime-lifecycle/browser";
 import { Vesting } from "@marlowe.io/language-examples";
 import { mkRestClient } from "@marlowe.io/runtime-rest-client";
-import { AddressBech32, ContractId, Tags, unAddressBech32 } from '@marlowe.io/runtime-core';
+import { AddressBech32, ContractId, Tags, contractId, unAddressBech32, unContractId } from '@marlowe.io/runtime-core';
 import { SupportedWallet } from '@marlowe.io/wallet/browser';
 import { RuntimeLifecycle } from '@marlowe.io/runtime-lifecycle/api';
 import { ContractDetails } from '@marlowe.io/runtime-rest-client/contract/details';
 import HashLoader from 'react-spinners/HashLoader';
 import { Address, Input } from '@marlowe.io/language-core-v1';
 import { Contract } from './Models';
+import { contractIdLink } from './Utils';
 
 type CreatePlansProps = {
   runtimeURL : string,
+  marloweScanURL : string,
   dAppId : string,
   setAndShowToast: (title:string, message:any, isDanger: boolean) => void
 };
 
-const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,dAppId,setAndShowToast}) => {
+const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dAppId,setAndShowToast}) => {
   const navigate = useNavigate();
   const selectedAWalletExtension = localStorage.getItem('walletProvider');
   if (!selectedAWalletExtension) { navigate('/'); }
@@ -239,7 +241,7 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,dAppId,setAndShowTo
       <div className="header">
         <img src="/images/marlowe-logo-primary.svg" alt="Logo" className="mb-4" />
         <div className='col-5 text-center'>
-          <h2>Token Plan Prototype</h2>
+          <h1>Token Plan Prototype</h1>
         </div>
         <div className="connected-wallet-details">
           <div className="dropdown">
@@ -302,10 +304,10 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,dAppId,setAndShowTo
         <table className="table">
           <thead>
             <tr>
-              {/* Headers */}
+              <th>Contract Id</th>
               <th>Title</th>
               <th>Claimer</th>
-              <th>Status </th>
+              <th>Status</th>
               <th>Cycle</th>
               <th>Periods</th>
               <th>Total</th>
@@ -318,6 +320,7 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,dAppId,setAndShowTo
             {contractsWaitingForDeposit
                 .map((contract, index) => (
                 <tr key={index}>
+                  <td>{contractIdLink(marloweScanURL,contract.contractId)}</td>
                   <td>{contract.title}</td>
                   <td>{contract.claimer.firstName + '  ' + contract.claimer.lastName}</td>
                   <td><span className='text-success'>Awaiting Deposit</span></td>
@@ -349,6 +352,7 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,dAppId,setAndShowTo
             {contractsWithinVestingPeriod
               .map((contract, index) => (
               <tr key={index}>
+                <td>{contractIdLink(marloweScanURL,contract.contractId)}</td>
                 <td>{contract.title}</td>
                 <td>{contract.claimer.firstName + '  ' + contract.claimer.lastName}</td>
                 <td>
@@ -386,6 +390,7 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,dAppId,setAndShowTo
             {contractsVestingEnded
               .map((contract, index) => (
               <tr key={index}>
+                <td>{contractIdLink(marloweScanURL,contract.contractId)}</td>
                 <td>{contract.title}</td>
                 <td> {contract.claimer.firstName + '  ' + contract.claimer.lastName}</td>
                 <td> <span className='text-primary'>Plan Ended</span></td>
@@ -399,6 +404,7 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,dAppId,setAndShowTo
             {contractsNoDepositBeforeDeadline
               .map((contract, index) => (
               <tr key={index}>
+                <td>{contractIdLink(marloweScanURL,contract.contractId)}</td>
                 <td>{contract.title}</td>
                 <td>{contract.claimer.firstName + '  ' + contract.claimer.lastName}</td>
                 <td><span className='text-danger'>Deposit Deadline Passed</span></td>
@@ -429,9 +435,10 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,dAppId,setAndShowTo
             {contractsClosed
                   .map((contract, index) => (
                   <tr key={index}>
+                    <td>{contractIdLink(marloweScanURL,contract.contractId)}</td>
                     <td>{contract.title}</td>
                     <td>{contract.claimer.firstName + '  ' + contract.claimer.lastName}</td>
-                    <td><b className='text-secondary'>Closed</b></td>
+                    <td><b className='text-secondary'>Closed </b></td>
                     <td>{contract.state.scheme.frequency}</td>
                     <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
                     <td>{formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}</td>
@@ -455,6 +462,7 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,dAppId,setAndShowTo
     
   );
 };
+
 
 
 
