@@ -10,10 +10,11 @@ import CreatePlans from './vesting/CreatedPlans';
 
 type AppProps = {
   runtimeURL: string;
-  dAppId : string
+  marloweScanURL : string;
+  dAppId : string;
 }
 
-const App: React.FC<AppProps> = ({runtimeURL,dAppId}) => {
+const App: React.FC<AppProps> = ({runtimeURL,marloweScanURL,dAppId}) => {
   const hasSelectedAWalletExtension = localStorage.getItem('walletProvider');
 
   const [toasts, setToasts] = useState<any[]>([]);
@@ -31,8 +32,8 @@ const App: React.FC<AppProps> = ({runtimeURL,dAppId}) => {
     <Router>
       <Routes>
         <Route path="/" element={hasSelectedAWalletExtension ? <Navigate to="/created-plans" /> : <Landing setAndShowToast={setAndShowToast} />} />
-        <Route path="/your-plans" element={hasSelectedAWalletExtension ? <YourTokenPlans runtimeURL={runtimeURL} dAppId={dAppId} setAndShowToast={setAndShowToast} /> : <Navigate to="/" />} />
-        <Route path="/created-plans" element={hasSelectedAWalletExtension ? <CreatePlans runtimeURL={runtimeURL} dAppId={dAppId} setAndShowToast={setAndShowToast} /> : <Navigate to="/" />} />
+        <Route path="/your-plans" element={hasSelectedAWalletExtension ? <YourTokenPlans runtimeURL={runtimeURL} marloweScanURL={marloweScanURL} dAppId={dAppId} setAndShowToast={setAndShowToast} /> : <Navigate to="/" />} />
+        <Route path="/created-plans" element={hasSelectedAWalletExtension ? <CreatePlans runtimeURL={runtimeURL} marloweScanURL={marloweScanURL} dAppId={dAppId} setAndShowToast={setAndShowToast} /> : <Navigate to="/" />} />
         <Route path="/about" element={hasSelectedAWalletExtension ? <About setAndShowToast={setAndShowToast} /> : <Navigate to="/" />} />
       </Routes>
     <div className="toast-container position-fixed bottom-0 end-0 p-3">

@@ -8,8 +8,10 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './styles/main.scss';
 
 import { mkRestClient } from "@marlowe.io/runtime-rest-client";
-const dAppId = `${process.env.DAPP_ID}`;
+const dAppId = process.env.DAPP_ID;
+const marloweScanURL = process.env.MARLOWE_SCAN_WEB_URL;
 let runtimeURL = process.env.MARLOWE_RUNTIME_WEB_URL;
+
 await fetch('/config.json').then(async (res) => {
   if (res.status === 200) {
     const { marloweWebServerUrl } = await res.json();
@@ -18,8 +20,13 @@ await fetch('/config.json').then(async (res) => {
     }
   }
 });
-
-if (runtimeURL === undefined || runtimeURL === null) {
+if(marloweScanURL === undefined  ) {
+  alert("Missing valid config.json file with marloweScanURL OR env keys are not set!")
+}
+else if(dAppId === undefined  ) {
+  alert("Missing valid config.json file with dAppId OR env keys are not set!")
+}
+else if (runtimeURL === undefined || runtimeURL === null) {
   alert("Missing valid config.json file with marloweWebServerUrl OR env keys are not set!")
 } else {
   const restClient = mkRestClient(runtimeURL)
@@ -39,6 +46,6 @@ if (runtimeURL === undefined || runtimeURL === null) {
     const root = ReactDOM.createRoot(el);
 
     // 4) Show the component on the screen
-    root.render(<App runtimeURL={runtimeURL} dAppId={dAppId} />);
+    root.render(<App runtimeURL={runtimeURL} marloweScanURL={marloweScanURL} dAppId={dAppId} />);
   }
 }
