@@ -13,15 +13,17 @@ import { ContractDetails } from '@marlowe.io/runtime-rest-client/contract/detail
 import HashLoader from 'react-spinners/HashLoader';
 import { Input } from '@marlowe.io/language-core-v1';
 import { Contract } from './Models';
+import { contractIdLink } from './Utils';
 
 
 type YourTokenPlansProps = {
   runtimeURL : string,
+  marloweScanURL : string,
   dAppId : string,
   setAndShowToast: (title:string, message:any, isDanger: boolean) => void
 };
 
-const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,dAppId,setAndShowToast}) => {
+const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanURL,dAppId,setAndShowToast}) => {
   const navigate = useNavigate();
   const selectedAWalletExtension = localStorage.getItem('walletProvider');
   if (!selectedAWalletExtension) { navigate('/'); }
@@ -170,7 +172,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,dAppId,setAnd
       <div className="header">
         <img src="/images/marlowe-logo-primary.svg" alt="Logo" className="mb-4" />
         <div className='col-5 text-center'>
-          <h2>Token Plan Prototype</h2>
+          <h1>Token Plan Prototype</h1>
         </div>
         <div className="connected-wallet-details">
           <div className="dropdown">
@@ -216,6 +218,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,dAppId,setAnd
           <thead>
             <tr>
               {/* Headers */}
+              <th>Contract Id</th>
               <th>Title</th>
               <th>Status </th>
               <th>Cycle</th>
@@ -229,8 +232,9 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,dAppId,setAnd
           {contractsVestingEnded
               .map((contract, index) => (
               <tr key={index}>
+                <td>{contractIdLink(marloweScanURL,contract.contractId)}</td>
                 <td>{contract.title}</td>
-                <td> <span className='text-primary'>Plan Ended</span> </td>
+                <td> <span className='text-primary'>Plan Ended</span></td>
                 <td>{contract.state.scheme.frequency}</td>
                 <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
                 <td>{formatADAs(contract.state.quantities.total)}</td>
@@ -258,6 +262,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,dAppId,setAnd
             {contractsWithinVestingPeriod
               .map((contract, index) => (
               <tr key={index}>
+                <td>{contractIdLink(marloweScanURL,contract.contractId)}</td>
                 <td>{contract.title}</td>
                 <td>
                     {contract.state.currentPeriod === contract.state.scheme.numberOfPeriods 
@@ -293,6 +298,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,dAppId,setAnd
             {contractsClosed
               .map((contract, index) => (
               <tr key={index}>
+                <td>{contractIdLink(marloweScanURL,contract.contractId)}</td>
                 <td>{contract.title}</td>
                 <td> <b className='text-secondary'>Closed</b> </td>
                 <td>{contract.state.scheme.frequency}</td>
