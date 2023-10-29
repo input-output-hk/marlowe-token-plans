@@ -48,7 +48,7 @@ const About: React.FC<AboutProps> = ({setAndShowToast}) => {
     setChangeAddress('');
     setAndShowToast(
       'Disconnected wallet',
-      <span className='text-color-white'>Please connect a wallet to see a list of available payouts.</span>,
+      <span className='text-color-white'>Please, Connect a wallet to see your Token Plans.</span>,
       false
     );
     navigate('/');
