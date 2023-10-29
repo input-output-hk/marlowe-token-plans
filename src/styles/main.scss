@@ -4660,6 +4660,13 @@ html[data-theme=dark] .card_WrXe:hover,html[data-theme=dark] .card_ZNYu:hover {
 }
 
 /* Center the content of the table headers */
+.table {
+  border-collapse: separate;
+  border-spacing: 0px;
+  border-radius:5px;
+}
+
+
 .table th, td {
   text-align: center;
   vertical-align: middle;
