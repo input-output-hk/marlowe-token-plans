@@ -1,3 +1,4 @@
+import { Vesting } from "@marlowe.io/language-examples";
 import { ContractId, unContractId } from "@marlowe.io/runtime-core"
 import React, { useEffect, useState } from 'react';
 
@@ -12,4 +13,12 @@ const truncateString = (str: string, start: number, end: number) => {
   const length = str.length;
   const lastLetterIndex = length ;
   return str.slice(end, lastLetterIndex)
+}
+export function displayCloseCondition(closeCondition : Vesting.CloseCondition ) {
+  switch(closeCondition.name) {
+    case "CancelledCloseCondition" : return `Cancelled Plan | ${closeCondition.percentageClaimed} % claimed `
+    case "DepositDeadlineCloseCondition" : return "Deposit Deadline Passed"
+    case "FullyClaimedCloseCondition" : return "Fully Claimed Plan" ;
+    case "UnknownCloseCondition" : return "Unknown Close Condition" ;   
+  }
 }

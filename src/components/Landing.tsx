@@ -16,8 +16,8 @@ const Landing: React.FC<LandingProps> = ({ setAndShowToast }) => {
   async function connectWallet(walletName: string) {
     localStorage.setItem('walletProvider', walletName);
     setAndShowToast(
-      `Sucessfully connected ${walletName} wallet`,
-      <span className='text-color-white'>You can now see a list of available payouts for your {walletName} wallet!</span>,
+      `Your ${walletName} wallet is connected `,
+      <span className='text-color-white'>You can see Token Plans in which your {walletName} wallet is a participant Now!</span>,
       false
     );
     navigate('/created-plans');
@@ -67,7 +67,7 @@ const Landing: React.FC<LandingProps> = ({ setAndShowToast }) => {
                   <div className="row">
                     <div className="col-12">
                       <h5 className="card-title font-weight-bold text-left">Choose a wallet</h5>
-                      <p className="card-help-text text-left">Please select a wallet to view rewards.</p>
+                      <p className="card-help-text text-left">Please, select a wallet to view your Token Plans.</p>
                     </div>
                   </div>
                   {validWalletExtentions.map((walletName) => renderWallets(walletName))}

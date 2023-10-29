@@ -13,7 +13,7 @@ import { ContractDetails } from '@marlowe.io/runtime-rest-client/contract/detail
 import HashLoader from 'react-spinners/HashLoader';
 import { Input } from '@marlowe.io/language-core-v1';
 import { Contract } from './Models';
-import { contractIdLink } from './Utils';
+import { contractIdLink, displayCloseCondition } from './Utils';
 
 
 type YourTokenPlansProps = {
@@ -62,11 +62,33 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
               .then((details) => [contractId, tags, details] as [ContractId,Tags,ContractDetails])
           )
         );
-        const allContracts : Contract<Vesting.VestingState>[] = (await Promise.all(
+
+        const contractIdsAndDetailsAndInputHistory = await Promise.all(
           contractIdsAndDetails.map(([contractId, tags, details]) =>
+            restClient
+              .getTransactionsForContract(contractId)
+              .then((result) =>
+                Promise.all(
+                  result.headers.map((txHeader) =>
+                    restClient.getContractTransactionById(
+                      contractId,
+                      txHeader.transactionId
+                    )
+                  )
+                )
+              )
+              .then((txsDetails) =>
+                txsDetails.map((txDetails) => txDetails.inputs).flat()
+              )
+              .then((inputHistory) => [contractId, tags, details, inputHistory] as [ContractId,Tags,ContractDetails,Input[]])
+          )
+        );
+        const allContracts : Contract<Vesting.VestingState>[] = (await Promise.all(
+          contractIdsAndDetailsAndInputHistory.map(([contractId, tags, details, inputHistory]) =>
             Vesting.getVestingState(
               tags[dAppId].scheme,
               details.state,
+              inputHistory,
               (environment) =>
                 runtimeLifecycle.contracts.getApplicableInputs(
                   contractId,
@@ -160,7 +182,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
     setChangeAddress('');
     setAndShowToast(
       'Disconnected wallet',
-      <span className='text-color-white'>Please connect a wallet to see a list of available payouts.</span>,
+      <span className='text-color-white'>Please, Connect a wallet to see your Token Plans.</span>,
       false
     );
     navigate('/');
@@ -300,7 +322,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
               <tr key={index}>
                 <td>{contractIdLink(marloweScanURL,contract.contractId)}</td>
                 <td>{contract.title}</td>
-                <td> <b className='text-secondary'>Closed</b> </td>
+                <td><b className='text-secondary'>Closed</b> <br/> <span style={{fontSize :'smaller', whiteSpace:'nowrap'}}>({displayCloseCondition(contract.state.closeCondition)})</span></td>
                 <td>{contract.state.scheme.frequency}</td>
                 <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
                 <td>{formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}</td>
