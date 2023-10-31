@@ -1,7 +1,7 @@
 apiVersion: v2
 name: marlowe-vesting
 version: v1.0.0
-description: Marlowe Vesting prototype
+description: Marlowe Token Plans Prototype
 home: https://github.com/input-output-hk/marlowe-vesting
 sources:
   - https://github.com/input-output-hk/marlowe-vesting
