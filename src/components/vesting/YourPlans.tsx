@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { BrowserRuntimeLifecycleOptions, mkRuntimeLifecycle } from "@marlowe.io/runtime-lifecycle/browser";
 import { Vesting } from "@marlowe.io/language-examples";
 import { mkRestClient } from "@marlowe.io/runtime-rest-client";
-import { AddressBech32, ContractId, Tags, unAddressBech32 } from '@marlowe.io/runtime-core';
+import { AddressBech32, ContractId, Tags, addressBech32, unAddressBech32 } from '@marlowe.io/runtime-core';
 import { SupportedWallet } from '@marlowe.io/wallet/browser';
 import { RuntimeLifecycle } from '@marlowe.io/runtime-lifecycle/api';
 import { ContractDetails } from '@marlowe.io/runtime-rest-client/contract/details';
@@ -55,7 +55,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
         const changeAddress = await runtimeLifecycle.wallet.getChangeAddress()
           .then((changeAddress : AddressBech32) => {setChangeAddress(unAddressBech32(changeAddress));return changeAddress;})
         
-        const contractIdsAndTags : [ContractId,Tags][] = (await restClient.getContracts({ tags: [dAppId] })).headers.map((header) => [header.contractId,header.tags]);
+        const contractIdsAndTags : [ContractId,Tags][] = (await restClient.getContracts({ partyAddresses:[changeAddress],tags: [dAppId] })).headers.map((header) => [header.contractId,header.tags]);
         const contractIdsAndDetails : [ContractId,Tags,ContractDetails] []= await Promise.all(
           contractIdsAndTags.map(([contractId,tags]) =>
             restClient

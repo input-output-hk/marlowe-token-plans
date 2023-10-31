@@ -8,7 +8,7 @@ import NewVestingScheduleModal from '../modals/NewVesting';
 import { BrowserRuntimeLifecycleOptions, mkRuntimeLifecycle } from "@marlowe.io/runtime-lifecycle/browser";
 import { Vesting } from "@marlowe.io/language-examples";
 import { mkRestClient } from "@marlowe.io/runtime-rest-client";
-import { AddressBech32, ContractId, Tags, contractId, unAddressBech32, unContractId } from '@marlowe.io/runtime-core';
+import { AddressBech32, ContractId, Tags, addressBech32, contractId, unAddressBech32, unContractId } from '@marlowe.io/runtime-core';
 
 import { RuntimeLifecycle } from '@marlowe.io/runtime-lifecycle/api';
 import { ContractDetails } from '@marlowe.io/runtime-rest-client/contract/details';
@@ -58,7 +58,7 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
         const changeAddress = await runtimeLifecycle.wallet.getChangeAddress()
           .then((changeAddress : AddressBech32) => {setChangeAddress(unAddressBech32(changeAddress));return unAddressBech32(changeAddress)})
         
-        const contractIdsAndTags : [ContractId,Tags][] = (await restClient.getContracts({ tags: [dAppId] })).headers.map((header) => [header.contractId,header.tags]);
+        const contractIdsAndTags : [ContractId,Tags][] = (await restClient.getContracts({ partyAddresses:[addressBech32(changeAddress)],tags: [dAppId] })).headers.map((header) => [header.contractId,header.tags]);
         const contractIdsAndDetails : [ContractId,Tags,ContractDetails] []= await Promise.all(
           contractIdsAndTags.map(([contractId,tags]) =>
             restClient
