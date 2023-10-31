@@ -17,6 +17,7 @@ import { Address, Input } from '@marlowe.io/language-core-v1';
 import { Contract } from './Models';
 import { contractIdLink, displayCloseCondition } from './Utils';
 import { ConnectionWallet } from '../Connection';
+import { Footer } from '../Footer';
 
 type CreatePlansProps = {
   runtimeURL : string,
@@ -235,13 +236,15 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
   return (
     <div className="container">
       <div className="header">
-        <img src="/images/marlowe-logo-primary.svg" alt="Logo" />
-        <h1 style={{margin:0}}>Token Plan Prototype</h1>
+      <div style={{width:"700px"}} className="d-flex justify-content-start align-items-baseline" >
+          <span ><h1 style={{margin:0}}>Token Plan Prototype</h1> </span>
+          <span ><h3 style={{margin:0,paddingLeft:"10px"}}>/ Token Provider's View</h3> </span>
+        </div>
         <ConnectionWallet runtimeURL={runtimeURL} setAndShowToast={setAndShowToast} /> 
       </div>
-      <div><button className="btn btn-link" disabled={true} onClick={() => navigate("/created-plans")}>Token Provider's View</button> 
-          | <button className="btn btn-link"  disabled={isWaitingConfirmation} onClick={() => navigate("/your-plans")}>Claimer's View</button> 
-          | <button className="btn btn-link" disabled={isWaitingConfirmation} onClick={() => navigate("/about")}>About</button> 
+         <div> <button className="btn btn-link" disabled={isWaitingConfirmation} onClick={() => navigate("/about")}>About</button> 
+          |  <button className="btn btn-link" disabled={true} onClick={() => navigate("/provider")}>Token Provider's View</button> 
+          | <button className="btn btn-link"  disabled={isWaitingConfirmation} onClick={() => navigate("/claimer")}>Claimer's View</button> 
           <hr></hr>
         </div>
         <div className='d-flex justify-content-start' style={{width:"200px"}}>
@@ -432,8 +435,8 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
         closeModal={() => setShowNewVestingScheduleModal(false) } 
         changeAddress={changeAddress} />
 
+      <Footer />  
     </div>
-    
   );
 };
 
