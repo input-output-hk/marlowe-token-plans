@@ -8,12 +8,13 @@ import { BrowserRuntimeLifecycleOptions, mkRuntimeLifecycle } from "@marlowe.io/
 import { Vesting } from "@marlowe.io/language-examples";
 import { mkRestClient } from "@marlowe.io/runtime-rest-client";
 import { AddressBech32, ContractId, Tags, unAddressBech32 } from '@marlowe.io/runtime-core';
-import { SupportedWallet } from '@marlowe.io/wallet/browser';
 import { RuntimeLifecycle } from '@marlowe.io/runtime-lifecycle/api';
 import { ContractDetails } from '@marlowe.io/runtime-rest-client/contract/details';
 import HashLoader from 'react-spinners/HashLoader';
 import { Input } from '@marlowe.io/language-core-v1';
 import { ConnectionWallet } from '../Connection';
+import { SupportedWalletName } from '@marlowe.io/wallet/browser';
+import { Footer } from '../Footer';
 
 const runtimeURL = `${process.env.MARLOWE_RUNTIME_WEB_URL}`;
 
@@ -58,7 +59,7 @@ const About: React.FC<AboutProps> = ({setAndShowToast}) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const runtimeLifecycleParameters : BrowserRuntimeLifecycleOptions = { runtimeURL:runtimeURL, walletName:selectedAWalletExtension as SupportedWallet}
+        const runtimeLifecycleParameters : BrowserRuntimeLifecycleOptions = { runtimeURL:runtimeURL, walletName:selectedAWalletExtension as SupportedWalletName}
         const runtimeLifecycle = await mkRuntimeLifecycle(runtimeLifecycleParameters)
         await runtimeLifecycle.wallet.getChangeAddress()
           .then((changeAddress : AddressBech32) => setChangeAddress(unAddressBech32(changeAddress)))
@@ -84,20 +85,22 @@ const About: React.FC<AboutProps> = ({setAndShowToast}) => {
   return (
     <div className="container">
       <div className="header">
-        <img src="/images/marlowe-logo-primary.svg" alt="Logo" />
-        <h1 style={{margin:0}}>Token Plan Prototype</h1>
+      <div style={{width:"700px"}} className="d-flex justify-content-start align-items-baseline" >
+          <span ><h1 style={{margin:0}}>Token Plan Prototype</h1> </span>
+          <span ><h3 style={{margin:0,paddingLeft:"10px"}}>/ About</h3> </span>
+        </div>
         <ConnectionWallet runtimeURL={runtimeURL} setAndShowToast={setAndShowToast} /> 
       </div>
-      <div><button className="btn btn-link"  onClick={() => navigate("/created-plans")}>Created Token Plans</button> 
-          | <button className="btn btn-link" onClick={() => navigate("/your-plans")}>Your Token Plans</button> 
-          | <button className="btn btn-link" disabled={true} onClick={() => navigate("/about")}>About</button> 
+      <div> <button className="btn btn-link" disabled={true} onClick={() => navigate("/about")}>About</button> 
+          | <button className="btn btn-link"  onClick={() => navigate("/provider")}>Token Provider's View</button> 
+          | <button className="btn btn-link" onClick={() => navigate("/claimer")}>Claimer's View</button> 
           <hr></hr>
         </div>  
       <div className="my-5">
-        Prototype Description to be done.
+        This prototype  
       </div>
+      <Footer />
     </div>
-    
   );
 };
 
