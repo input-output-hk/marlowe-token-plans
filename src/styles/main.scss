@@ -4555,7 +4555,7 @@ html[data-theme=dark] .card_WrXe:hover,html[data-theme=dark] .card_ZNYu:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
+    padding: 2rem 0;
   }
 
   .title {
@@ -4708,4 +4708,9 @@ html[data-theme=dark] .card_WrXe:hover,html[data-theme=dark] .card_ZNYu:hover {
 
 .text-color-primary {
   color: $primary;
+}
+
+.walletIcon {
+  width: 15px;
+  height: 15px;
 }

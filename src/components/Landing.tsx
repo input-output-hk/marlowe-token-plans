@@ -1,4 +1,4 @@
-import { getAvailableWallets } from '@marlowe.io/wallet/browser';
+import { BroswerWalletExtension, getInstalledWalletExtensions } from '@marlowe.io/wallet/browser';
 import React, { } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ type LandingProps = {
 const Landing: React.FC<LandingProps> = ({ setAndShowToast }) => {
   const navigate = useNavigate();
   const selectedAWalletExtension = localStorage.getItem('walletProvider');
-  const validWalletExtentions = getAvailableWallets()
+  const installedWalletExtensions = getInstalledWalletExtensions()
   if (selectedAWalletExtension) { navigate('/created-plans') }
 
   async function connectWallet(walletName: string) {
@@ -27,27 +27,17 @@ const Landing: React.FC<LandingProps> = ({ setAndShowToast }) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  function renderWallets(walletName: string) {
-    if (window.cardano && window.cardano[walletName]) {
+  function renderWallets(extension: BroswerWalletExtension) {
       return (<div className="row mt-2">
-        <div className="col-12 bordered-container" onClick={() => connectWallet(walletName)}>
-          <img src={window.cardano[walletName].icon} alt="Icon Before" className="icon" />
-          {capitalizeFirstLetter(walletName)} Wallet
+        <div className="col-12 bordered-container" onClick={() => connectWallet(extension.name)}>
+          <img src={extension.icon} alt="Icon Before" className="icon" />
+          {capitalizeFirstLetter(extension.name)} Wallet
           <div className="cardano-badge">
             <img src="images/cardano-logo.png" alt="Icon After" className="icon-after" />
             Cardano
           </div>
         </div>
       </div>)
-    } else {
-      return (
-        <div className="row mt-2">
-          <div className="col-12 bordered-container">
-            Please install {walletName} wallet extension to use app
-          </div>
-        </div>
-      )
-    }
   }
 
   return (
@@ -57,7 +47,7 @@ const Landing: React.FC<LandingProps> = ({ setAndShowToast }) => {
           <img src="/images/marlowe-logo-primary.svg" alt="Logo" className="mb-4" id="marlowe-logo" />
         </div>
         <div className="row">
-          <p className="title">Vesting prototype</p>
+          <p className="title">Token Plans Prototype</p>
         </div>
         <div className="row justify-content-center mt-4">
           <div className="col-12 ">
@@ -70,7 +60,7 @@ const Landing: React.FC<LandingProps> = ({ setAndShowToast }) => {
                       <p className="card-help-text text-left">Please, select a wallet to view your Token Plans.</p>
                     </div>
                   </div>
-                  {validWalletExtentions.map((walletName) => renderWallets(walletName))}
+                  {installedWalletExtensions.map(extension => renderWallets(extension))}
                   <div className="row mt-4 d-none">
                     <div className="col-6 text-left p-0">
                       <a href="#" >Learn more</a>
