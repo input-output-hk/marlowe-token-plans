@@ -15,6 +15,7 @@ import { Input } from '@marlowe.io/language-core-v1';
 import { Contract } from './Models';
 import { contractIdLink, displayCloseCondition } from './Utils';
 import { ConnectionWallet } from '../Connection';
+import { Footer } from '../Footer';
 
 
 type YourTokenPlansProps = {
@@ -41,9 +42,6 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
   const [isFetching, setIsFetching] = useState(false);
 
   const [isWaitingConfirmation, setWaitingConfirmation] = useState(false);
-
-  const truncatedAddress = changeAddress.slice(0,18);
-  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -163,42 +161,19 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
       );
     }
   }
-
-
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(changeAddress);
-      setAndShowToast(
-        'Address copied to clipboard',
-        <span>Copied <span className="font-weight-bold">{changeAddress}</span> to clipboard</span>,
-        false
-      );
-    } catch (err) {
-      console.error('Failed to copy address: ', err);
-    }
-  };
-
-  const disconnectWallet = () => {
-    localStorage.removeItem('walletProvider');
-    setChangeAddress('');
-    setAndShowToast(
-      'Disconnected wallet',
-      <span className='text-color-white'>Please, Connect a wallet to see your Token Plans.</span>,
-      false
-    );
-    navigate('/');
-  }
   
   return (
     <div className="container">
       <div className="header">
-        <img src="/images/marlowe-logo-primary.svg" alt="Logo" />
-        <h1 style={{margin:0}}>Token Plan Prototype</h1>
+        <div style={{width:"700px"}} className="d-flex justify-content-start align-items-baseline" >
+          <span ><h1 style={{margin:0}}>Token Plan Prototype</h1> </span>
+          <span ><h3 style={{margin:0,paddingLeft:"10px"}}>/ Claimer's View</h3> </span>
+        </div>
         <ConnectionWallet runtimeURL={runtimeURL} setAndShowToast={setAndShowToast} /> 
       </div>
-      <div><button className="btn btn-link"  disabled={isWaitingConfirmation} onClick={() => navigate("/created-plans")}>Token Provider's View</button> 
-          | <button className="btn btn-link" disabled={true} onClick={() => navigate("/your-plans")}>Claimer's View</button> 
-          | <button className="btn btn-link" disabled={isWaitingConfirmation} onClick={() => navigate("/about")}>About</button> 
+       <div> <button className="btn btn-link" disabled={isWaitingConfirmation} onClick={() => navigate("/about")}>About</button> 
+          |  <button className="btn btn-link"  disabled={isWaitingConfirmation} onClick={() => navigate("/provider")}>Token Provider's View</button> 
+          |  <button className="btn btn-link" disabled={true} onClick={() => navigate("/claimer")}>Claimer's View</button> 
           <hr></hr>
         </div>  
       <div className="my-5">
@@ -312,6 +287,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
           </tbody>
         </table> )}
       </div>
+      <Footer /> 
     </div>
     
   );
