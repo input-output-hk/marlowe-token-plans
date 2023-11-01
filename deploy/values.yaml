@@ -5,4 +5,4 @@ networks:
   - mainnet
 images:
   stagingTag: "741101c3"
-  productionTag: "72c7e12d"
+  productionTag: "741101c3"
