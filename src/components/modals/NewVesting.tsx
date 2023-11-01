@@ -25,6 +25,8 @@ type FormData = {
   claimerAddress: string;
 };
 
+
+
 const initialFormData : () => FormData = () => ({
   firstName: '',
   lastName: '',
@@ -36,7 +38,7 @@ const initialFormData : () => FormData = () => ({
   claimerAddress: '',
 })
 
-const formErrorsInitialState = {
+const formErrorsInitialState : FormDataError = {
   firstName: null,
   lastName: null,
   title: null,
@@ -45,6 +47,15 @@ const formErrorsInitialState = {
   claimerAddress: null,
 }
 
+type FormDataError = {
+  firstName: string | null;
+  lastName : string | null;
+  title : string | null;
+  initialDepositAmount: string | null;
+  startDate: string | null;
+  claimerAddress: string| null;
+};
+
 const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showModal, closeModal, handleCreateVestingContract, changeAddress}) => {
 
 
@@ -52,7 +63,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
   
   const [formData, setFormData] = useState<FormData>(initialFormData());
   
-  const [formErrors, setFormErrors] = useState(formErrorsInitialState);
+  const [formErrors, setFormErrors] = useState<FormDataError>(formErrorsInitialState);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
@@ -78,6 +89,15 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
         valid = false;
         errors = { ...errors, [key]: 'This field is required' };
       }
+    }
+    if (lengthInUtf8Bytes(formData.firstName) >= 64){
+      errors = { ...errors, "firstName": 'This field is too long to be stored on chain( 64 bytes maximum)' };
+    }
+    if (lengthInUtf8Bytes(formData.lastName) >= 64){
+      errors = { ...errors, "lastName": 'This field is too long to be stored on chain( 64 bytes maximum)' };
+    }
+    if (lengthInUtf8Bytes(formData.title) >= 64){
+      errors = { ...errors, "title": 'This field is too long to be stored on chain( 64 bytes maximum)' };
     }
 
     setFormErrors(errors);
@@ -111,6 +131,11 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
     closeModal();
   }
 
+  function lengthInUtf8Bytes(str : string) {
+    // Matches only the 10.. bytes that are non-initial characters in a multi-byte sequence.
+    var m = encodeURIComponent(str).match(/%[89ABab]/g);
+    return str.length + (m ? m.length : 0);
+  }
 
   return (
     <>
@@ -153,7 +178,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
                         <div className="form-group my-2 col-6">
                           <label htmlFor="initialDepositAmount">Initial Deposit (in ₳)</label>
                           <input
-                            type="text"
+                            type="number" 
                             className="form-control"
                             id="initialDepositAmount"
                             value={formData.initialDepositAmount}
