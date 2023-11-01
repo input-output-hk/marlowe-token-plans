@@ -15,9 +15,10 @@ import { ContractDetails } from '@marlowe.io/runtime-rest-client/contract/detail
 import HashLoader from 'react-spinners/HashLoader';
 import { Address, Input } from '@marlowe.io/language-core-v1';
 import { Contract } from './Models';
-import { contractIdLink, displayCloseCondition } from './Utils';
+import { contractIdLink, cssOverrideSpinnerCentered, displayCloseCondition, formatADAs } from './Utils';
 import { ConnectionWallet } from '../Connection';
 import { Footer } from '../Footer';
+import { SupportedWalletName } from '@marlowe.io/wallet/browser';
 
 type CreatePlansProps = {
   runtimeURL : string,
@@ -53,7 +54,7 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
       if(isFetching) return;
       try {
         setIsFetching(true)
-        const runtimeLifecycleParameters : BrowserRuntimeLifecycleOptions = { runtimeURL:runtimeURL, walletName:selectedAWalletExtension as SupportedWallet}
+        const runtimeLifecycleParameters : BrowserRuntimeLifecycleOptions = { runtimeURL:runtimeURL, walletName:selectedAWalletExtension as SupportedWalletName}
         const runtimeLifecycle = await mkRuntimeLifecycle(runtimeLifecycleParameters).then((a) => {setRuntimeLifecycle(a);return a})
         const restClient = mkRestClient(runtimeURL); 
         const changeAddress = await runtimeLifecycle.wallet.getChangeAddress()
@@ -451,29 +452,5 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
     </div>
   );
 };
-
-
-
-
-export type CurrencyF = String
-export type WholeNumberF = string
-export type DecimalF = string
-const formatADAs = (lovelaces: bigint, isMainnet: Boolean = false, currencyName: string = "₳"): string=> {
-  const adas = (Math.trunc(Number(lovelaces).valueOf() / 1_000_000))
-  const decimalADAs = (lovelaces % 1_000_000n)
-  const currency = isMainnet ? currencyName : "t" + currencyName
-  if (decimalADAs === 0n) 
-    return adas.toString()  + ' ' + currency;
-  else 
-    return adas.toString() + ' ' + decimalADAs.toString().padStart(6, '0') + ' ' + currency;
-}
-
-const cssOverrideSpinnerCentered 
-  = ({display: "block",
-      marginLeft: "auto",
-      marginRight:"auto",
-      height: "auto",
-      witdth : "20px",
-      paddingTop: "10px"})
 
 export default CreatePlans;
