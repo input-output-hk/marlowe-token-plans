@@ -29,10 +29,12 @@ export const Footer : React.FC<FooterProps>  = () => {
           <div className="linksList_iXQi">
             <h2 className="linksHeading_xaI4">Resources</h2>
             <div className="linkItem_uyV6">
-              <a href="https://iohk.io/" target="_blank" rel="noopener noreferrer">Input Output Global</a></div>
-            <div className="linkItem_uyV6"><a href="https://cardano.org/" target="_blank" rel="noopener noreferrer">Cardano.org</a></div>
-            <div className="linkItem_uyV6"><a href="https://www.essentialcardano.io/" target="_blank" rel="noopener noreferrer">Essential Cardano</a></div>
-            <div className="linkItem_uyV6"><a href="https://www.youtube.com/channel/UCX9j__vYOJu00iqBrCzecVw" target="_blank" rel="noopener noreferrer">IOG Academy</a></div></div>
+              <a href="https://marlowe.iohk.io/" target="_blank" rel="noopener noreferrer">Official Website</a></div>
+            <div className="linkItem_uyV6"><a href="https://cardano.org/" target="_blank" rel="noopener noreferrer">Documentation</a></div>
+            <div className="linkItem_uyV6"><a href="https://play.marlowe.iohk.io/" target="_blank" rel="noopener noreferrer">Playground</a></div>
+            <div className="linkItem_uyV6">
+              <a href="https://marlowe.iohk.io/blog" 
+                target="_blank" rel="noopener noreferrer">Blog</a></div></div>
           <div className="linksList_iXQi"><h2 className="linksHeading_xaI4">Support</h2>
             <div className="linkItem_uyV6"><a href="https://iohk.zendesk.com/hc/en-us/requests/new" target="_blank" rel="noopener noreferrer">IOG tech support</a></div></div>
           <div className="linksList_iXQi"><h2 className="linksHeading_xaI4">Legal</h2>
