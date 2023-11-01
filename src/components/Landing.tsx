@@ -11,7 +11,7 @@ const Landing: React.FC<LandingProps> = ({ setAndShowToast }) => {
   const navigate = useNavigate();
   const selectedAWalletExtension = localStorage.getItem('walletProvider');
   const installedWalletExtensions = getInstalledWalletExtensions()
-  if (selectedAWalletExtension) { navigate('/created-plans') }
+  if (selectedAWalletExtension) { navigate('/about') }
 
   async function connectWallet(walletName: string) {
     localStorage.setItem('walletProvider', walletName);
@@ -20,7 +20,7 @@ const Landing: React.FC<LandingProps> = ({ setAndShowToast }) => {
       <span className='text-color-white'>You can see Token Plans in which your {walletName} wallet is a participant Now!</span>,
       false
     );
-    navigate('/created-plans');
+    navigate('/about');
   }
 
   function capitalizeFirstLetter(str: string): string {
