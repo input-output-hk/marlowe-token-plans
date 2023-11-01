@@ -6,8 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { BrowserRuntimeLifecycleOptions, mkRuntimeLifecycle } from "@marlowe.io/runtime-lifecycle/browser";
 import { Vesting } from "@marlowe.io/language-examples";
 import { mkRestClient } from "@marlowe.io/runtime-rest-client";
-import { AddressBech32, ContractId, Tags, addressBech32, unAddressBech32 } from '@marlowe.io/runtime-core';
-import { SupportedWallet } from '@marlowe.io/wallet/browser';
+import { AddressBech32, ContractId, Tags, unAddressBech32, unContractId } from '@marlowe.io/runtime-core';
 import { RuntimeLifecycle } from '@marlowe.io/runtime-lifecycle/api';
 import { ContractDetails } from '@marlowe.io/runtime-rest-client/contract/details';
 import HashLoader from 'react-spinners/HashLoader';
@@ -53,7 +52,14 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
         const changeAddress = await runtimeLifecycle.wallet.getChangeAddress()
           .then((changeAddress : AddressBech32) => {setChangeAddress(unAddressBech32(changeAddress));return changeAddress;})
         
-        const contractIdsAndTags : [ContractId,Tags][] = (await restClient.getContracts({ partyAddresses:[changeAddress],tags: [dAppId] })).headers.map((header) => [header.contractId,header.tags]);
+        const contractsClosedIds =  contractsClosed.map(c => unContractId(c.contractId))  
+        const contractIdsAndTags : [ContractId,Tags][] = 
+          (await restClient.getContracts({ partyAddresses:[changeAddress],tags: [dAppId] }))
+            .headers
+            .filter((header) => !contractsClosedIds.includes(unContractId(header.contractId)))
+            .filter(header => header.tags[dAppId].claimerId === (unAddressBech32(changeAddress).slice(0,18)))
+            .map((header) => [header.contractId,header.tags]);
+
         const contractIdsAndDetails : [ContractId,Tags,ContractDetails] []= await Promise.all(
           contractIdsAndTags.map(([contractId,tags]) =>
             restClient
@@ -97,7 +103,8 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
                     isSelfAttributed : tags[dAppId].isSelfAttributed === 1,
                     providerId : tags[dAppId].providerId,
                     claimer : {firstName : tags[dAppId].firstName, lastName:tags[dAppId].lastName, id: tags[dAppId].claimerId },
-                    state : state}))))).filter(contract => contract.claimer.id === (unAddressBech32(changeAddress).slice(0,18)))
+                    state : state})))))
+                
        
         setContractsWithinVestingPeriod
               (allContracts
@@ -107,10 +114,15 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
                 (allContracts
                   .filter(c => c.state.name === "VestingEnded")
                   .map (c => c as Contract<Vesting.VestingEnded>))
-        setContractsClosed
-                  (allContracts
-                    .filter(c => c.state.name === "Closed")
-                    .map (c => c as Contract<Vesting.Closed>))
+
+        const newContractsClosed = allContracts
+          .filter(c => c.state.name === "Closed")
+          .map (c => c as Contract<Vesting.Closed>)
+
+        if(newContractsClosed.length > 0 ) {
+          setContractsClosed(contractsClosed.concat(newContractsClosed))
+        }
+
         setIsFetchingFirstTime(false)
         setIsFetching(false)
       } catch (err : any) {
@@ -125,7 +137,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
     // Clear the interval when the component is unmounted
     return () => clearInterval(intervalId);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAWalletExtension, navigate]);
+  }, [selectedAWalletExtension, contractsClosed,navigate]);
 
 
   

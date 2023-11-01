@@ -59,7 +59,16 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
         const changeAddress = await runtimeLifecycle.wallet.getChangeAddress()
           .then((changeAddress : AddressBech32) => {setChangeAddress(unAddressBech32(changeAddress));return unAddressBech32(changeAddress)})
         
-        const contractIdsAndTags : [ContractId,Tags][] = (await restClient.getContracts({ partyAddresses:[addressBech32(changeAddress)],tags: [dAppId] })).headers.map((header) => [header.contractId,header.tags]);
+        const contractsClosedIds =  contractsClosed.map(c => unContractId(c.contractId))
+
+        const contractIdsAndTags : [ContractId,Tags][] = 
+          (await restClient.getContracts({ partyAddresses:[addressBech32(changeAddress)],tags: [dAppId] }))
+            .headers
+            .filter((header) => !contractsClosedIds.includes(unContractId(header.contractId)))
+            .filter(header => header.tags[dAppId].providerId === (changeAddress.slice(0,18)))
+            .map((header) => [header.contractId,header.tags])
+        
+ 
         const contractIdsAndDetails : [ContractId,Tags,ContractDetails] []= await Promise.all(
           contractIdsAndTags.map(([contractId,tags]) =>
             restClient
@@ -104,7 +113,7 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                               providerId : tags[dAppId].providerId,
                               claimer : {firstName : tags[dAppId].firstName, lastName:tags[dAppId].lastName, id: tags[dAppId].claimerId },
                               state : state} as Contract<Vesting.VestingState> )))))
-           .filter(contract => contract.providerId === (changeAddress.slice(0,18)))
+           
 
         setContractsWaitingForDeposit
           (allContracts
@@ -122,10 +131,13 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                 (allContracts
                   .filter(c => c.state.name === "VestingEnded")
                   .map (c => c as Contract<Vesting.VestingEnded>))
-        setContractsClosed
-                  (allContracts
-                    .filter(c => c.state.name === "Closed")
-                    .map (c => c as Contract<Vesting.Closed>))
+        const newContractsClosed = allContracts
+          .filter(c => c.state.name === "Closed")
+          .map (c => c as Contract<Vesting.Closed>)
+        if(newContractsClosed.length > 0 ) {
+          setContractsClosed(contractsClosed.concat(newContractsClosed))
+        }
+
         setIsFetchingFirstTime(false)
         setIsFetching(false)
                   
@@ -137,11 +149,11 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
     }
 
     fetchData()
-    const intervalId = setInterval(() => {fetchData()}, 5_000); 
+    const intervalId = setInterval(() => {fetchData()}, 10_000); 
     // Clear the interval when the component is unmounted
     return () => clearInterval(intervalId);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAWalletExtension, navigate]);
+  }, [selectedAWalletExtension,contractsClosed]);
 
 
   
