@@ -19,6 +19,8 @@ spec:
           - "/client-www/index.html"
           - --log-level
           - "info"
+          - --cors-allow-origins
+          - "*"
         imagePullPolicy: Always
         ports:
           - expose: true
@@ -83,6 +85,8 @@ spec:
                 - "/client-www/index.html"
                 - --log-level
                 - "info"
+                - --cors-allow-origins
+                - "*"
               imagePullPolicy: Always
               ports:
                 - expose: true
