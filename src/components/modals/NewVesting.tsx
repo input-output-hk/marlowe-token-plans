@@ -153,7 +153,7 @@ const NewVestingScheduleModal: React.FC<NewVestingScheduleModalProps> = ({ showM
                         <div className="form-group my-2 col-6">
                           <label htmlFor="initialDepositAmount">Initial Deposit (in ₳)</label>
                           <input
-                            type="text"
+                            type="number" 
                             className="form-control"
                             id="initialDepositAmount"
                             value={formData.initialDepositAmount}
