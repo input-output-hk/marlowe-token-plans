@@ -94,7 +94,7 @@ export const ConnectedWallet : React.FC<ConnectedProps>  = ({ runtimeURL,selecte
             <span style={{fontSize: "medium"}}>
               <Image src={selectedWalletExtension.icon} className="walletIcon" alt="" />
               &nbsp;&nbsp;&nbsp;
-              {(adas).toString()}.
+              {(adas).toLocaleString()}.
               </span>
               <span  style={{fontSize: "smaller"}}>{decimalADAs + '  '} </span> 
               <span  style={{fontWeight: 'bold',fontSize: "small"}}> {isMainnet ? '  ₳' : '  t₳' }</span>      

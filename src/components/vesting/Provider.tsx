@@ -15,9 +15,10 @@ import { ContractDetails } from '@marlowe.io/runtime-rest-client/contract/detail
 import HashLoader from 'react-spinners/HashLoader';
 import { Address, Input } from '@marlowe.io/language-core-v1';
 import { Contract } from './Models';
-import { contractIdLink, displayCloseCondition } from './Utils';
+import { contractIdLink, cssOverrideSpinnerCentered, displayCloseCondition, formatADAs } from './Utils';
 import { ConnectionWallet } from '../Connection';
 import { Footer } from '../Footer';
+import { SupportedWalletName } from '@marlowe.io/wallet/browser';
 
 type CreatePlansProps = {
   runtimeURL : string,
@@ -53,13 +54,22 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
       if(isFetching) return;
       try {
         setIsFetching(true)
-        const runtimeLifecycleParameters : BrowserRuntimeLifecycleOptions = { runtimeURL:runtimeURL, walletName:selectedAWalletExtension as SupportedWallet}
+        const runtimeLifecycleParameters : BrowserRuntimeLifecycleOptions = { runtimeURL:runtimeURL, walletName:selectedAWalletExtension as SupportedWalletName}
         const runtimeLifecycle = await mkRuntimeLifecycle(runtimeLifecycleParameters).then((a) => {setRuntimeLifecycle(a);return a})
         const restClient = mkRestClient(runtimeURL); 
         const changeAddress = await runtimeLifecycle.wallet.getChangeAddress()
           .then((changeAddress : AddressBech32) => {setChangeAddress(unAddressBech32(changeAddress));return unAddressBech32(changeAddress)})
         
-        const contractIdsAndTags : [ContractId,Tags][] = (await restClient.getContracts({ partyAddresses:[addressBech32(changeAddress)],tags: [dAppId] })).headers.map((header) => [header.contractId,header.tags]);
+        const contractsClosedIds =  contractsClosed.map(c => unContractId(c.contractId))
+
+        const contractIdsAndTags : [ContractId,Tags][] = 
+          (await restClient.getContracts({ partyAddresses:[addressBech32(changeAddress)],tags: [dAppId] }))
+            .headers
+            .filter((header) => !contractsClosedIds.includes(unContractId(header.contractId)))
+            .filter(header => header.tags[dAppId].providerId === (changeAddress.slice(0,18)))
+            .map((header) => [header.contractId,header.tags])
+        
+ 
         const contractIdsAndDetails : [ContractId,Tags,ContractDetails] []= await Promise.all(
           contractIdsAndTags.map(([contractId,tags]) =>
             restClient
@@ -104,7 +114,7 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                               providerId : tags[dAppId].providerId,
                               claimer : {firstName : tags[dAppId].firstName, lastName:tags[dAppId].lastName, id: tags[dAppId].claimerId },
                               state : state} as Contract<Vesting.VestingState> )))))
-           .filter(contract => contract.providerId === (changeAddress.slice(0,18)))
+           
 
         setContractsWaitingForDeposit
           (allContracts
@@ -122,10 +132,13 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                 (allContracts
                   .filter(c => c.state.name === "VestingEnded")
                   .map (c => c as Contract<Vesting.VestingEnded>))
-        setContractsClosed
-                  (allContracts
-                    .filter(c => c.state.name === "Closed")
-                    .map (c => c as Contract<Vesting.Closed>))
+        const newContractsClosed = allContracts
+          .filter(c => c.state.name === "Closed")
+          .map (c => c as Contract<Vesting.Closed>)
+        if(newContractsClosed.length > 0 ) {
+          setContractsClosed(contractsClosed.concat(newContractsClosed))
+        }
+
         setIsFetchingFirstTime(false)
         setIsFetching(false)
                   
@@ -137,11 +150,11 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
     }
 
     fetchData()
-    const intervalId = setInterval(() => {fetchData()}, 5_000); 
+    const intervalId = setInterval(() => {fetchData()}, 10_000); 
     // Clear the interval when the component is unmounted
     return () => clearInterval(intervalId);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAWalletExtension, navigate]);
+  }, [selectedAWalletExtension,contractsClosed]);
 
 
   
@@ -303,7 +316,9 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                   <td><span className='text-success'>Awaiting Deposit</span></td>
                   <td>{contract.state.scheme.frequency}</td>
                   <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
-                  <td>{formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}</td>
+                  <td> <span style={{whiteSpace:'nowrap'}}>
+                  {formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}
+                    </span></td>
                   <td>0%</td>
                   <td>{formatDate(contract.state.initialDepositDeadline)}</td>
                   <td>
@@ -341,7 +356,9 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                      }</td>
                 <td>{contract.state.scheme.frequency}</td>
                 <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
-                <td>{formatADAs(contract.state.quantities.total)}</td>
+                <td> <span style={{ whiteSpace:'nowrap'}}>
+                    {formatADAs(contract.state.quantities.total)}
+                    </span></td>
                 <td>{((contract.state.quantities.withdrawable* 100n) / contract.state.quantities.total)  + '%'}</td>
                 <td>{formatDate(contract.state.periodInterval[1])} </td>
                 <td>
@@ -373,7 +390,9 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                 <td> <span className='text-primary'>Plan Ended</span></td>
                 <td>{contract.state.scheme.frequency}</td>
                 <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
-                <td>{formatADAs(contract.state.quantities.total)}</td>
+                <td> <span style={{ whiteSpace:'nowrap'}}>
+                    {formatADAs(contract.state.quantities.total)}
+                    </span></td>
                 <td>{((contract.state.quantities.withdrawable* 100n) / contract.state.quantities.total)  + '%'}</td>
                 <td>Vested Tokens aren't yet fully claimed</td>
               </tr>
@@ -387,7 +406,10 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                 <td><span className='text-danger'>Deposit Deadline Passed</span></td>
                 <td>{contract.state.scheme.frequency}</td>
                 <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
-                <td>{formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}</td>
+                <td>
+                      <span style={{fontSize :'small', whiteSpace:'nowrap'}}>
+                      {formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}
+                      </span></td>
                 <td>0%</td>
                 <td></td>
                 <td >
@@ -418,7 +440,10 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                     <td><b className='text-secondary'>Closed</b> <br/> <span style={{fontSize :'smaller', whiteSpace:'nowrap'}}>({displayCloseCondition(contract.state.closeCondition)})</span></td>
                     <td>{contract.state.scheme.frequency}</td>
                     <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
-                    <td>{formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}</td>
+                    <td>
+                      <span style={{ whiteSpace:'nowrap'}}>
+                        {formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}
+                      </span></td>
                     <td>0%</td>
                     <td>N/A</td>
                     <td></td>
@@ -439,29 +464,5 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
     </div>
   );
 };
-
-
-
-
-export type CurrencyF = String
-export type WholeNumberF = string
-export type DecimalF = string
-const formatADAs = (lovelaces: bigint, isMainnet: Boolean = false, currencyName: string = "₳"): string=> {
-  const adas = (Math.trunc(Number(lovelaces).valueOf() / 1_000_000))
-  const decimalADAs = (lovelaces % 1_000_000n)
-  const currency = isMainnet ? currencyName : "t" + currencyName
-  if (decimalADAs === 0n) 
-    return adas.toString()  + ' ' + currency;
-  else 
-    return adas.toString() + ' ' + decimalADAs.toString().padStart(6, '0') + ' ' + currency;
-}
-
-const cssOverrideSpinnerCentered 
-  = ({display: "block",
-      marginLeft: "auto",
-      marginRight:"auto",
-      height: "auto",
-      witdth : "20px",
-      paddingTop: "10px"})
 
 export default CreatePlans;
