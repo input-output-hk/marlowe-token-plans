@@ -31,9 +31,9 @@ export const formatADAs = (lovelaces: bigint, isMainnet: Boolean = false, curren
   const decimalADAs = (lovelaces % 1_000_000n)
   const currency = isMainnet ? currencyName : "t" + currencyName
   if (decimalADAs === 0n) 
-    return adas.toString()  + ' ' + currency;
+    return adas.toLocaleString()  + ' ' + currency;
   else 
-    return adas.toString() + ' ' + decimalADAs.toString().padStart(6, '0') + ' ' + currency;
+    return adas.toLocaleString() + ' ' + decimalADAs.toString().padStart(6, '0') + ' ' + currency;
 }
 
 export const cssOverrideSpinnerCentered 

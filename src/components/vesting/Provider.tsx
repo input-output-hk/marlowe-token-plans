@@ -316,7 +316,9 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                   <td><span className='text-success'>Awaiting Deposit</span></td>
                   <td>{contract.state.scheme.frequency}</td>
                   <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
-                  <td>{formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}</td>
+                  <td> <span style={{whiteSpace:'nowrap'}}>
+                  {formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}
+                    </span></td>
                   <td>0%</td>
                   <td>{formatDate(contract.state.initialDepositDeadline)}</td>
                   <td>
@@ -354,7 +356,9 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                      }</td>
                 <td>{contract.state.scheme.frequency}</td>
                 <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
-                <td>{formatADAs(contract.state.quantities.total)}</td>
+                <td> <span style={{ whiteSpace:'nowrap'}}>
+                    {formatADAs(contract.state.quantities.total)}
+                    </span></td>
                 <td>{((contract.state.quantities.withdrawable* 100n) / contract.state.quantities.total)  + '%'}</td>
                 <td>{formatDate(contract.state.periodInterval[1])} </td>
                 <td>
@@ -386,7 +390,9 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                 <td> <span className='text-primary'>Plan Ended</span></td>
                 <td>{contract.state.scheme.frequency}</td>
                 <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
-                <td>{formatADAs(contract.state.quantities.total)}</td>
+                <td> <span style={{ whiteSpace:'nowrap'}}>
+                    {formatADAs(contract.state.quantities.total)}
+                    </span></td>
                 <td>{((contract.state.quantities.withdrawable* 100n) / contract.state.quantities.total)  + '%'}</td>
                 <td>Vested Tokens aren't yet fully claimed</td>
               </tr>
@@ -400,7 +406,10 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                 <td><span className='text-danger'>Deposit Deadline Passed</span></td>
                 <td>{contract.state.scheme.frequency}</td>
                 <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
-                <td>{formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}</td>
+                <td>
+                      <span style={{fontSize :'small', whiteSpace:'nowrap'}}>
+                      {formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}
+                      </span></td>
                 <td>0%</td>
                 <td></td>
                 <td >
@@ -431,7 +440,10 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                     <td><b className='text-secondary'>Closed</b> <br/> <span style={{fontSize :'smaller', whiteSpace:'nowrap'}}>({displayCloseCondition(contract.state.closeCondition)})</span></td>
                     <td>{contract.state.scheme.frequency}</td>
                     <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
-                    <td>{formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}</td>
+                    <td>
+                      <span style={{ whiteSpace:'nowrap'}}>
+                        {formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}
+                      </span></td>
                     <td>0%</td>
                     <td>N/A</td>
                     <td></td>

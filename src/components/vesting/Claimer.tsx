@@ -225,7 +225,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
                 <td> <span className='text-primary'>Plan Ended</span></td>
                 <td>{contract.state.scheme.frequency}</td>
                 <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
-                <td>{formatADAs(contract.state.quantities.total)}</td>
+                <td><span style={{whiteSpace:'nowrap'}}>{formatADAs(contract.state.quantities.total)}</span></td>
                 <td>{((contract.state.quantities.withdrawable* 100n) / contract.state.quantities.total)  + '%'}</td>
                 <td>
                   {contract.state.withdrawInput? 
@@ -261,7 +261,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
                      }</td>
                 <td>{contract.state.scheme.frequency}</td>
                 <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
-                <td>{formatADAs(contract.state.quantities.total)}</td>
+                <td><span style={{whiteSpace:'nowrap'}}>{formatADAs(contract.state.quantities.total)}</span></td>
                 <td>{(((contract.state.quantities.vested - contract.state.quantities.claimed) * 100n) / contract.state.quantities.total)  + '%'}</td>
                 <td>
                   {contract.state.withdrawInput? 
@@ -291,7 +291,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
                 <td><b className='text-secondary'>Closed</b> <br/> <span style={{fontSize :'smaller', whiteSpace:'nowrap'}}>({displayCloseCondition(contract.state.closeCondition)})</span></td>
                 <td>{contract.state.scheme.frequency}</td>
                 <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
-                <td>{formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}</td>
+                <td><span style={{whiteSpace:'nowrap'}}>{formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}</span></td>
                 <td> Closed </td>
                 <td>
                 </td>
