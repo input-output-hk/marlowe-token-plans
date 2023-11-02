@@ -6,13 +6,12 @@ export function contractIdLink (marloweScanURL : string , contractId : ContractI
     return <a target="_blank"
      rel="noopener noreferrer"
      href={`${marloweScanURL}/contractView?tab=info&contractId=` + encodeURIComponent(unContractId(contractId))}>
-     {truncateString(unContractId(contractId), 5, 60)} </a> 
+     {truncateAddress(unContractId(contractId))}<span style={{fontSize:"xx-small"}}>...</span> </a> 
    }
 
-const truncateString = (str: string, start: number, end: number) => {
+const truncateAddress = (str: string) => {
   const length = str.length;
-  const lastLetterIndex = length ;
-  return str.slice(end, lastLetterIndex)
+  return str.slice(length-66, length-61)
 }
 export function displayCloseCondition(closeCondition : Vesting.CloseCondition ) {
   switch(closeCondition.name) {
