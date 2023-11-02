@@ -407,7 +407,7 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
                 <td>{contract.state.scheme.frequency}</td>
                 <td>{contract.state.scheme.numberOfPeriods.toString()}</td>
                 <td>
-                      <span style={{fontSize :'small', whiteSpace:'nowrap'}}>
+                      <span style={{whiteSpace:'nowrap'}}>
                       {formatADAs(contract.state.scheme.expectedInitialDeposit.amount)}
                       </span></td>
                 <td>0%</td>
