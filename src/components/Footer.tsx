@@ -30,7 +30,7 @@ export const Footer : React.FC<FooterProps>  = () => {
             <h2 className="linksHeading_xaI4">Resources</h2>
             <div className="linkItem_uyV6">
               <a href="https://marlowe.iohk.io/" target="_blank" rel="noopener noreferrer">Official Website</a></div>
-            <div className="linkItem_uyV6"><a href="https://cardano.org/" target="_blank" rel="noopener noreferrer">Documentation</a></div>
+            <div className="linkItem_uyV6"><a href="https://docs.marlowe.iohk.io/" target="_blank" rel="noopener noreferrer">Documentation</a></div>
             <div className="linkItem_uyV6"><a href="https://play.marlowe.iohk.io/" target="_blank" rel="noopener noreferrer">Playground</a></div>
             <div className="linkItem_uyV6">
               <a href="https://marlowe.iohk.io/blog" 
