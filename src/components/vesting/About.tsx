@@ -132,8 +132,6 @@ const About: React.FC<AboutProps> = ({setAndShowToast}) => {
         <h3>Roadmap</h3>
         <p>The current version is a full end-to-end Marlowe contract example integrated within a Web DApp. 
            It is a first iteration and is limited at the moment to three periods per Vesting Contract.</p> 
-        <p>The current version is a full end-to-end Marlowe contract example integrated within a Web DApp. It 
-           is a first iteration and is limited at the moment to three periods per Vesting Contract.</p>
         <p>The second iteration will allow you to create an infinite number of periods. The missing Marlowe 
           feature to be provided at this DApp level is called <b>Long Live Running Contract</b> or <b>Contract 
           Merkleization</b>. The capabilities are already available in the Runtime but not yet available in the Marlowe TS-SDK.</p>
