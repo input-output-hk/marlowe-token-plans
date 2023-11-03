@@ -17,7 +17,7 @@ $danger: #FF515B;
 }
 
 .markdown li,body {
-  word-wrap: break-word
+  word-wrap: break-word;
 }
 
 body,ol ol,ol ul,ul ol,ul ul {
@@ -3639,10 +3639,12 @@ html[data-theme=dark] .selectInput_vS5v {
 
 .card_WrXe,.card_ZNYu {
   border: 1px solid #ccc;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  padding: 20px
+  margin-bottom:10px;
+ 
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 5px;
+  padding-bottom: 5px
 }
 
 .card_WrXe h4,.card_ZNYu h4 {
@@ -3652,8 +3654,6 @@ html[data-theme=dark] .selectInput_vS5v {
 }
 
 .card_WrXe a,.card_ZNYu a {
-  align-items: center;
-  display: flex;
   margin-left: auto;
   margin-top: auto
 }

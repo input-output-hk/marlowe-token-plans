@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
-
-
 import { BrowserRuntimeLifecycleOptions, mkRuntimeLifecycle } from "@marlowe.io/runtime-lifecycle/browser";
 import { Vesting } from "@marlowe.io/language-examples";
 import { mkRestClient } from "@marlowe.io/runtime-rest-client";
@@ -13,8 +10,6 @@ import HashLoader from 'react-spinners/HashLoader';
 import { Input } from '@marlowe.io/language-core-v1';
 import { Contract } from './Models';
 import { contractIdLink, cssOverrideSpinnerCentered, displayCloseCondition, formatADAs } from './Utils';
-import { ConnectionWallet } from '../Connection';
-import { Footer } from '../Footer';
 import { SupportedWalletName } from '@marlowe.io/wallet/browser';
 
 
@@ -25,11 +20,10 @@ type YourTokenPlansProps = {
   setAndShowToast: (title:string, message:any, isDanger: boolean) => void
 };
 
-const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanURL,dAppId,setAndShowToast}) => {
-  const navigate = useNavigate();
+const Claimer: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanURL,dAppId,setAndShowToast}) => {
+
   const selectedAWalletExtension = localStorage.getItem('walletProvider');
-  if (!selectedAWalletExtension) { navigate('/'); }
-  
+
   const [runtimeLifecycle, setRuntimeLifecycle] = useState<RuntimeLifecycle>();
   const [changeAddress, setChangeAddress] = useState<string>('')
 
@@ -138,7 +132,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
     // Clear the interval when the component is unmounted
     return () => clearInterval(intervalId);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAWalletExtension, contractsClosed,navigate]);
+  }, [selectedAWalletExtension, contractsClosed]);
 
 
   
@@ -176,19 +170,7 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
   }
   
   return (
-    <div className="container">
-      <div className="header">
-        <div style={{width:"700px"}} className="d-flex justify-content-start align-items-baseline" >
-          <span ><h1 style={{margin:0}}>Token Plan Prototype</h1> </span>
-          <span ><h3 style={{margin:0,paddingLeft:"10px"}}>/ Claimer's View</h3> </span>
-        </div>
-        <ConnectionWallet runtimeURL={runtimeURL} setAndShowToast={setAndShowToast} /> 
-      </div>
-       <div> <button className="btn btn-link" disabled={isWaitingConfirmation} onClick={() => navigate("/about")}>About</button> 
-          |  <button className="btn btn-link"  disabled={isWaitingConfirmation} onClick={() => navigate("/provider")}>Token Provider's View</button> 
-          |  <button className="btn btn-link" disabled={true} onClick={() => navigate("/claimer")}>Claimer's View</button> 
-          <hr></hr>
-        </div>  
+    <>
       <div className="my-5">
         {(isFetchingFirstTime ? 
             <div className='d-flex justify-content-start' style={{width:"150px"}}>
@@ -300,10 +282,9 @@ const YourTokenPlans: React.FC<YourTokenPlansProps> = ({runtimeURL,marloweScanUR
           </tbody>
         </table> )}
       </div>
-      <Footer /> 
-    </div>
+    </>
     
   );
 };
 
-export default YourTokenPlans;
+export default Claimer;
