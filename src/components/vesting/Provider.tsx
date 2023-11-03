@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
 
 import moment from 'moment';
 
@@ -8,7 +7,7 @@ import NewVestingScheduleModal from '../modals/NewVesting';
 import { BrowserRuntimeLifecycleOptions, mkRuntimeLifecycle } from "@marlowe.io/runtime-lifecycle/browser";
 import { Vesting } from "@marlowe.io/language-examples";
 import { mkRestClient } from "@marlowe.io/runtime-rest-client";
-import { AddressBech32, ContractId, Tags, addressBech32, contractId, unAddressBech32, unContractId } from '@marlowe.io/runtime-core';
+import { AddressBech32, ContractId, Tags, addressBech32, unAddressBech32, unContractId } from '@marlowe.io/runtime-core';
 
 import { RuntimeLifecycle } from '@marlowe.io/runtime-lifecycle/api';
 import { ContractDetails } from '@marlowe.io/runtime-rest-client/contract/details';
@@ -16,22 +15,21 @@ import HashLoader from 'react-spinners/HashLoader';
 import { Address, Input } from '@marlowe.io/language-core-v1';
 import { Contract } from './Models';
 import { contractIdLink, cssOverrideSpinnerCentered, displayCloseCondition, formatADAs } from './Utils';
-import { ConnectionWallet } from '../Connection';
-import { Footer } from '../Footer';
 import { SupportedWalletName } from '@marlowe.io/wallet/browser';
 
 type CreatePlansProps = {
   runtimeURL : string,
   marloweScanURL : string,
   dAppId : string,
+  onWaitingConfirmation : () => void,
+  onConfirmation : () => void,
   setAndShowToast: (title:string, message:any, isDanger: boolean) => void
 };
 
-const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dAppId,setAndShowToast}) => {
-  const navigate = useNavigate();
+const Provider: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dAppId,setAndShowToast,onWaitingConfirmation,onConfirmation}) => {
+
   const selectedAWalletExtension = localStorage.getItem('walletProvider');
-  if (!selectedAWalletExtension) { navigate('/'); }
-  
+
   const [runtimeLifecycle, setRuntimeLifecycle] = useState<RuntimeLifecycle>();
   const [changeAddress, setChangeAddress] = useState<string>('')
 
@@ -46,8 +44,6 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
   const [isWaitingConfirmation, setWaitingConfirmation] = useState(false);
 
   const [showNewVestingScheduleModal, setShowNewVestingScheduleModal] = useState(false);
-
- 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -156,12 +152,11 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAWalletExtension,contractsClosed]);
 
-
-  
   async function handleApplyInput(contractId : ContractId, actionName : string ,inputsToApply : Input[] | undefined) {
     try {
     if(inputsToApply && runtimeLifecycle) {
       setWaitingConfirmation(true)
+      onWaitingConfirmation()
       const txId = await runtimeLifecycle.contracts.applyInputs(
         contractId,
         { inputs: inputsToApply }
@@ -180,9 +175,11 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
         false
       );
       setWaitingConfirmation(false)
+      onConfirmation()
       console.log(`Apply Input Confirmed on Cardano.`);
     }} catch (e) {
       setWaitingConfirmation(false)
+      onConfirmation()
       setAndShowToast(
         `${actionName} on Token Plan has Failed`,
         "Please Retry...",
@@ -247,19 +244,7 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
 
 
   return (
-    <div className="container">
-      <div className="header">
-      <div style={{width:"700px"}} className="d-flex justify-content-start align-items-baseline" >
-          <span ><h1 style={{margin:0}}>Token Plan Prototype</h1> </span>
-          <span ><h3 style={{margin:0,paddingLeft:"10px"}}>/ Token Provider's View</h3> </span>
-        </div>
-        <ConnectionWallet runtimeURL={runtimeURL} setAndShowToast={setAndShowToast} /> 
-      </div>
-         <div> <button className="btn btn-link" disabled={isWaitingConfirmation} onClick={() => navigate("/about")}>About</button> 
-          |  <button className="btn btn-link" disabled={true} onClick={() => navigate("/provider")}>Token Provider's View</button> 
-          | <button className="btn btn-link"  disabled={isWaitingConfirmation} onClick={() => navigate("/claimer")}>Claimer's View</button> 
-          <hr></hr>
-        </div>
+    <>
         <div className='d-flex justify-content-start' style={{width:"200px"}}>
             <button
               className='btn btn-outline-primary' onClick={() => setShowNewVestingScheduleModal(true)}
@@ -458,11 +443,9 @@ const CreatePlans: React.FC<CreatePlansProps> = ({runtimeURL,marloweScanURL,dApp
         showModal={showNewVestingScheduleModal} 
         handleCreateVestingContract={handleCreateVestingContract} 
         closeModal={() => setShowNewVestingScheduleModal(false) } 
-        changeAddress={changeAddress} />
-
-      <Footer />  
-    </div>
+        changeAddress={changeAddress} /> 
+    </>
   );
 };
 
-export default CreatePlans;
+export default Provider;
