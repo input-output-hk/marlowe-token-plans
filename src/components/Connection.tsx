@@ -4,39 +4,47 @@ import { BrowserRuntimeLifecycleOptions, mkRuntimeLifecycle } from '@marlowe.io/
 import { mkRestClient } from '@marlowe.io/runtime-rest-client';
 import { SupportedWalletName, getInstalledWalletExtensions } from '@marlowe.io/wallet/browser';
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Image } from 'semantic-ui-react'
+import { SelectWalletExtensionModal } from './modals/SelectWalletExtension';
 
 type ConnectionWalletProps = {
   runtimeURL : string,
+  onConnect: () => void
+  onDisconnect: () => void
   setAndShowToast: (title:string, message:any, isDanger: boolean) => void
 };
 
-type DisconnectedProps = {
-    runtimeURL : string,
-    setAndShowToast: (title:string, message:any, isDanger: boolean) => void
-  };
-
 type ConnectedProps = {
     runtimeURL : string,
+    onDisconnect: () => void
     selectedWalletExtensionName : string
     setAndShowToast: (title:string, message:any, isDanger: boolean) => void
   };
 
-export const ConnectionWallet: React.FC<ConnectionWalletProps> = ({runtimeURL,setAndShowToast}) => { 
+export const ConnectionWallet: React.FC<ConnectionWalletProps> = ({runtimeURL,setAndShowToast,onConnect,onDisconnect}) => {
+  
+  const [showSelectWalletExtensionModal, setShowSelectWalletExtensionModal] = useState(false);
   const selectedWalletExtensionName = localStorage.getItem('walletProvider');
-  if (!selectedWalletExtensionName) { return <DisconnectedWallet runtimeURL={runtimeURL} setAndShowToast={setAndShowToast}  /> }
-  else { return <ConnectedWallet runtimeURL={runtimeURL} selectedWalletExtensionName={selectedWalletExtensionName} setAndShowToast={setAndShowToast}  /> }
+  if (!selectedWalletExtensionName) { 
+    return (<><div className="dropdown" style={{width: "210px"}}>
+      <button className="btn btn-light btn-sm dropdown-toggle mr-2" onClick={() => setShowSelectWalletExtensionModal(true)}>
+        <span style={{fontSize: "medium"}}>
+          Connect Cardano Wallet
+          </span>  
+      </button>
+    </div>
+      <SelectWalletExtensionModal 
+            showModal={showSelectWalletExtensionModal}
+            onConnect={() => onConnect()} 
+            closeModal={() => setShowSelectWalletExtensionModal(false) } 
+          /></>)
+    }
+  else { 
+    return <><ConnectedWallet onDisconnect={() => onDisconnect()} runtimeURL={runtimeURL} selectedWalletExtensionName={selectedWalletExtensionName} setAndShowToast={setAndShowToast}/>
+            </> }
 }
 
-export const DisconnectedWallet: React.FC<DisconnectedProps> = ({runtimeURL}) => { 
-
-  return <div>Connection</div>
-
-}
-
-export const ConnectedWallet : React.FC<ConnectedProps>  = ({ runtimeURL,selectedWalletExtensionName,setAndShowToast }) => {
-  const navigate = useNavigate();
+export const ConnectedWallet : React.FC<ConnectedProps>  = ({ runtimeURL,selectedWalletExtensionName,setAndShowToast,onDisconnect }) => {
   const [runtimeLifecycle, setRuntimeLifecycle] = useState<RuntimeLifecycle>();
   const [changeAddress, setChangeAddress] = useState<string>('')
   const [isMainnet, setIsMainnet] = useState<boolean>(false)
@@ -60,8 +68,8 @@ export const ConnectedWallet : React.FC<ConnectedProps>  = ({ runtimeURL,selecte
     fetchData()
     
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedWalletExtensionName, navigate]);
-
+  }, [selectedWalletExtensionName]);
+ 
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(changeAddress);
@@ -77,13 +85,7 @@ export const ConnectedWallet : React.FC<ConnectedProps>  = ({ runtimeURL,selecte
 
   const disconnectWallet = () => {
     localStorage.removeItem('walletProvider');
-
-    setAndShowToast(
-      'Disconnected wallet',
-      <span className='text-color-white'>Please, Connect a wallet to see your Token Plans.</span>,
-      false
-    );
-    navigate('/');
+    onDisconnect()
   }
   
   const adas = (Math.trunc(lovelaceBalance / 1_000_000))
