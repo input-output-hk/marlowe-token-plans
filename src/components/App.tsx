@@ -24,8 +24,9 @@ const claimerPage = "Claimer's View"
 const isClaimerPage = (page:Page) => page === claimerPage
 
 const App: React.FC<AppProps> = ({runtimeURL,marloweScanURL,dAppId}) => {
+  const selectedWalletExtensionName = localStorage.getItem('walletProvider');
   const [isWaitingConfirmation, setWaitingConfirmation] = useState(false);
-  const [isConnected, setIsConnected] = useState(false); 
+  const [isConnected, setIsConnected] = useState<boolean>(selectedWalletExtensionName?true:false); 
   const [currentPage, setCurrentPage] = useState<Page>("About"); 
   const [toasts, setToasts] = useState<any[]>([]);
 
