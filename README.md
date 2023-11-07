@@ -1,46 +1,88 @@
-# Getting Started with Create React App
+<h2 align="center">
+  <a href="" target="blank_">
+    <img src="./doc/image/logo.svg" alt="Logo" height="75">
+  </a>
+  <br>
+  Token Plan Prototype : A Vesting Contract Use Case  
+</h2>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<div align="center">
+  <a href=""><img src="https://img.shields.io/badge/stability-beta-33bbff.svg" alt="Beta"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg"></a>
+  <a href="https://discord.com/invite/cmveaxuzBn"><img src="https://img.shields.io/discord/826816523368005654?label=Chat%20on%20Discord"></a>
+  <a href="https://iohk.zendesk.com/hc/en-us/requests/new"><img src="https://img.shields.io/badge/Support-orange"></a>
+</div>
 
-## Available Scripts
+# Overview 
 
-In the project directory, you can run:
+The **Token Plan** Prototype is :
+ - A Web DApp powered by **Marlowe Smart Contract** Technology Over **Cardano**. 
+ - A use case of a vesting contract developed and available in the [Marlowe ts-sdk](https://github.com/input-output-hk/marlowe-ts-sdk/),
+ - A demonstration on how to build DApps Powered By Marlowe with well known mainstream web technologies such as **Typescript** & **React Framework**.
 
-### `npm start`
+We have deployed instances for you to play with: [Test it by yourself](https://vesting-preprod.prod.scdev.aws.iohkdev.io/)!
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## The Vesting Contract
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+The vesting contract has been designed in the <a href="https://play.marlowe.iohk.io" > Marlowe Playground </a> and then integrated in the [Marlowe ts-sdk](https://github.com/input-output-hk/marlowe-ts-sdk) to be used in that use case (Token Plans)... 
+This contract is: 
+ - Available for use in the npm package `@marlowe.io/language-examples`
+    ```ts
+    import { Vesting } from "@marlowe.io/language-examples";
+    ```
+ - Open source in the [`\marlowe-ts-sdk/blob/main/packages/language/examples/src/vesting.ts`](https://github.com/input-output-hk/marlowe-ts-sdk/blob/main/packages/language/examples/src/vesting.ts)
+ - Documented in our ts-sdk [API Reference](https://input-output-hk.github.io/marlowe-ts-sdk/modules/_marlowe_io_language_examples.vesting.html)
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## The Prototype 
 
-### `npm run build`
+It allows you to create ₳ Token Plans over Cardano: 
+- ₳ Token Plans are created by a "Token Provider". 
+- The Provider will deposit a given ₳ amount with a time-based scheme defining how to release these ₳ over time to a "Claimer". 
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**N.B** : In the context of this prototype, we have combined these 2 participants' views to simplify the use case demonstration
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The intent here is not to provide services to you over Cardano, but to demonstrate Marlowe technology capabilities with a concrete and fully open-source use case. We highly recommend that you look how this prototype is implemented.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Roadmap
+The current version is a full end-to-end Marlowe contract example integrated within a Web DApp. It is a first iteration and is limited at the moment to three periods per Vesting Contract.
 
-### `npm run eject`
+The second iteration will allow you to create an infinite number of periods. The missing Marlowe feature to be provided at this DApp level is called Long Live Running Contract or Contract Merkleization. The capabilities are already available in the Runtime but not yet available in the Marlowe TS-SDK.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+# How To Run Locally 
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+To get the dApp up and running on your local machine, follow these steps:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/input-output-hk/marlowe-payouts
+   cd marlowe-payouts
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+2. **Install Dependencies**
+   ```bash
+   npm install
 
-## Learn More
+4. **Configure Marlowe URLs in .env**
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+   To ensure the dApp communicates correctly with the Marlowe runtime and scan instances, you need to set the appropriate URLs in the `.env` file.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+   ### Steps:
+
+   1. **Open the .env File**:
+      Navigate to the root directory of your project and open the `.env` file in your preferred text editor.
+
+   2. **Set the Marlowe Runtime Web URL**:
+      Locate the line `MARLOWE_RUNTIME_WEB_URL=<Your-Runtime-Instance>`. Replace `<Your-Runtime-Instance>` with the actual URL of your Marlowe runtime instance.
+
+      MARLOWE_RUNTIME_WEB_URL=https://example-runtime-url.com
+
+   3. **Set the Marlowe Scan URL**:
+      Locate the line `MARLOWE_SCAN_URL=<Your-Scan-Instance>`. Replace `<Your-Scan-Instance>` with the actual URL of your Marlowe scan instance.
+
+      MARLOWE_SCAN_URL=https://example-scan-url.com
+
+3. **Run the dApp**
+   ```bash
+   npm run start
+
+Enjoy and stay tuned for our next releases!
