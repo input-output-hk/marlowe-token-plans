@@ -3,11 +3,11 @@
 apiVersion: core.oam.dev/v1beta1
 kind: Application
 metadata:
-  name: marlowe-vesting-{{ $network }}
+  name: marlowe-token-plans-{{ $network }}
   namespace: marlowe-production
 spec:
   components:
-    - name: marlowe-vesting-{{ $network }}
+    - name: marlowe-token-plans-{{ $network }}
       properties:
         image: joseluisq/static-web-server:2
         args:
@@ -32,37 +32,37 @@ spec:
           type: scaler
         - properties:
             domains:
-              - vesting-{{ $network }}.prod.scdev.aws.iohkdev.io
+              - token-plans-{{ $network }}.prod.scdev.aws.iohkdev.io
             rules:
               - port: 8080
           type: https-route
         - type: init-container
           properties:
-            name: load-vesting-client
+            name: load-token-plans-client
             image: ghcr.io/input-output-hk/marlowe-vesting:{{ $.Values.images.productionTag }}
             args:
               - -c
               - |
                   root="$(dirname $(readlink -f /profile/index.html))"
-                  cp -a $root/* /share/marlowe-vesting/static
-                  cat > /share/marlowe-vesting/static/config.json <<EOF
+                  cp -a $root/* /share/marlowe-token-plans/static
+                  cat > /share/marlowe-token-plans/static/config.json <<EOF
                   {
                     "marloweWebServerUrl": "https://marlowe-runtime-{{ $network }}-web.demo.scdev.aws.iohkdev.io"
                   }
                   EOF
             mountName: client-www
-            initMountPath: /share/marlowe-vesting/static
+            initMountPath: /share/marlowe-token-plans/static
             appMountPath: /client-www
       type: webservice
   policies:
-    - name: marlowe-vesting-staging
+    - name: marlowe-token-plans-staging
       properties:
         clusters:
           - local
         namespace: marlowe-staging
       type: topology
 
-    - name: marlowe-vesting
+    - name: marlowe-token-plans
       properties:
         clusters:
           - local
@@ -73,7 +73,7 @@ spec:
       type: override
       properties:
         components:
-          - name: marlowe-vesting-{{ $network }}
+          - name: marlowe-token-plans-{{ $network }}
             properties:
               image: joseluisq/static-web-server:2
               args:
@@ -98,26 +98,26 @@ spec:
                 type: scaler
               - properties:
                   domains:
-                    - vesting-{{ $network }}.scdev.aws.iohkdev.io
+                    - token-plans-{{ $network }}.scdev.aws.iohkdev.io
                   rules:
                     - port: 8080
                 type: https-route
               - type: init-container
                 properties:
-                  name: load-vesting-client
+                  name: load-token-plans-client
                   image: ghcr.io/input-output-hk/marlowe-vesting:{{ $.Values.images.stagingTag }}
                   args:
                     - -c
                     - |
                         root="$(dirname $(readlink -f /profile/index.html))"
-                        cp -a $root/* /share/marlowe-vesting/static
-                        cat > /share/marlowe-vesting/static/config.json <<EOF
+                        cp -a $root/* /share/marlowe-token-plans/static
+                        cat > /share/marlowe-token-plans/static/config.json <<EOF
                         {
                           "marloweWebServerUrl": "https://marlowe-runtime-{{ $network }}-web.demo.scdev.aws.iohkdev.io"
                         }
                         EOF
                   mountName: client-www
-                  initMountPath: /share/marlowe-vesting/static
+                  initMountPath: /share/marlowe-token-plans/static
                   appMountPath: /client-www
             type: webservice
   workflow:
@@ -133,7 +133,7 @@ spec:
           requests:
             ephemeralStorage: 25Gi
           includedFlakeURIs:
-            - "github:input-output-hk/marlowe-vesting?ref={{ $.Values.images.stagingTag }}#marlowe-vesting"
+            - "github:input-output-hk/marlowe-token-plans?ref={{ $.Values.images.stagingTag }}#marlowe-vesting"
       - meta:
           alias: Push image
         name: push-image
@@ -143,24 +143,24 @@ spec:
           requests:
             ephemeralStorage: 25Gi
           includedFlakeURIs:
-            - "github:input-output-hk/marlowe-vesting?ref={{ $.Values.images.productionTag }}#marlowe-vesting"
+            - "github:input-output-hk/marlowe-token-plans?ref={{ $.Values.images.productionTag }}#marlowe-vesting"
       - type: deploy
         meta:
-          alias: Deploy marlowe-vesting
+          alias: Deploy marlowe-token-plans
         dependsOn:
           - push-image
-        name: marlowe-vesting
+        name: marlowe-token-plans
         properties:
           policies:
-            - marlowe-vesting
+            - marlowe-token-plans
       - type: deploy
         meta:
-          alias: Deploy marlowe-vesting to staging
+          alias: Deploy marlowe-token-plans to staging
         dependsOn:
           - push-image-staging
-        name: marlowe-vesting-staging
+        name: marlowe-token-plans-staging
         properties:
           policies:
-            - marlowe-vesting-staging
+            - marlowe-token-plans-staging
             - staging-override
 {{- end }}
