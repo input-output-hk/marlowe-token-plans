@@ -29,9 +29,9 @@ We invite you to test [a deployed instance of the Token Plan Prototype](https://
 We designed the vesting contract in the <a href="https://play.marlowe.iohk.io">Marlowe Playground</a> and then integrated it in the [Marlowe TS-SDK](https://github.com/input-output-hk/marlowe-ts-sdk) to be used in the Token Plans use case. 
 
 The vesting contract is available for use in the npm package `@marlowe.io/language-examples`
-    ```ts
-    import { Vesting } from "@marlowe.io/language-examples";
-    ```
+```ts
+import { Vesting } from "@marlowe.io/language-examples";
+```
 It is available as open source code here: [`\marlowe-ts-sdk/blob/main/packages/language/examples/src/vesting.ts`](https://github.com/input-output-hk/marlowe-ts-sdk/blob/main/packages/language/examples/src/vesting.ts)
 
 The vesting contract is documented in our TS-SDK [API Reference](https://input-output-hk.github.io/marlowe-ts-sdk/modules/_marlowe_io_language_examples.vesting.html).
