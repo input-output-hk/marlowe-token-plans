@@ -22,7 +22,7 @@ The **Token Plan** Prototype includes the following:
 
 ## Deployed Instance
 
-We invite you to test [a deployed instance of the Token Plan Prototype](https://vesting-preprod.prod.scdev.aws.iohkdev.io/) for yourself. 
+We invite you to test [a deployed instance of the Token Plan Prototype](https://token-plans-preprod.prod.scdev.aws.iohkdev.io/) for yourself. 
 
 ## The Vesting Contract
 
