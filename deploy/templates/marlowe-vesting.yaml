@@ -4,7 +4,6 @@ apiVersion: core.oam.dev/v1beta1
 kind: Application
 metadata:
   name: marlowe-token-plans-{{ $network }}
-  namespace: marlowe-production
 spec:
   components:
     - name: marlowe-token-plans-{{ $network }}
