@@ -4,5 +4,5 @@ networks:
   - preview
   - mainnet
 images:
-  stagingTag: "3c73ea6e"
+  stagingTag: "b6c0ad8c"
   productionTag: "c3109369"
