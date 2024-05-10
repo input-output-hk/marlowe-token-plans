@@ -36,6 +36,15 @@ It is available as open source code here: [`\marlowe-ts-sdk/blob/main/packages/l
 
 The vesting contract is documented in our TS-SDK [API Reference](https://input-output-hk.github.io/marlowe-ts-sdk/modules/_marlowe_io_language_examples.vesting.html).
 
+
+### Configuration
+
+In order to configure the application your HTTP server should serve a `config.json`. To do so, create the file `public/config.json` with the following structure:
+
+```json
+{ "marloweWebServerUrl": 'https://link-to-runner-instance', "develMode": false }
+```
+
 ## The Prototype 
 
 The prototype allows you to create ₳ Token Plans over Cardano. 
