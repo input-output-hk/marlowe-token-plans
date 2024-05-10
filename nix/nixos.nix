@@ -51,15 +51,15 @@ in
   };
   config = {
     http-services.static-sites = mapAttrs'
-      (name: tokenPlans: {
+      (name: token-plans: {
         name = "marlowe-token-plans-${name}";
         value = {
-          inherit (tokenPlans) domain;
-          root = mkRoot name tokenPlans;
+          inherit (token-plans) domain;
+          root = mkRoot name token-plans;
           index-fallback = true;
         };
       })
-      config.marlowe.tokenPlans;
+      config.marlowe.token-plans;
   };
 }
 
