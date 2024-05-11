@@ -54,7 +54,7 @@ in
       (name: tokenPlan: {
         name = "marlowe-token-plans-${name}";
         value = {
-          inherit (token-plans) domain;
+          inherit (tokenPlan) domain;
           root = mkRoot name tokenPlan;
           index-fallback = true;
         };
